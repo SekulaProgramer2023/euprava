@@ -15,7 +15,7 @@ func InsertInitialUsers() {
 		return
 	}
 
-	collection := db.Client.Database("euprava").Collection("users")
+	collection := db.Client.Database("eupravaM").Collection("users")
 
 	count, err := collection.CountDocuments(context.TODO(), bson.D{})
 	if err != nil {

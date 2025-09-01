@@ -19,7 +19,6 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-// RegisterUserHandler obrađuje HTTP request za registraciju korisnika
 func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 

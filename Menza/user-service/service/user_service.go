@@ -15,7 +15,7 @@ import (
 )
 
 func GetUsers() ([]models.User, error) {
-	collection := db.Client.Database("euprava").Collection("users")
+	collection := db.Client.Database("eupravaM").Collection("users")
 	var users []models.User
 	cursor, err := collection.Find(context.TODO(), map[string]interface{}{})
 	if err != nil {
@@ -31,7 +31,7 @@ func GetUsers() ([]models.User, error) {
 
 // RegisterUser registruje korisnika i prosleđuje ga drugom sistemu
 func RegisterUser(user models.User) (models.User, error) {
-	collection := db.Client.Database("euprava").Collection("users")
+	collection := db.Client.Database("eupravaM").Collection("users")
 
 	// 1. Provera da li korisnik već postoji
 	var existingUser models.User
@@ -68,7 +68,7 @@ func RegisterUser(user models.User) (models.User, error) {
 	}
 
 	// 7. Pošalji POST request drugom sistemu
-	resp, err := http.Post("http://host.docker.internal/menza/users/register", "application/json", bytes.NewBuffer(body))
+	resp, err := http.Post("http://host.docker.internal/domovi/users/register", "application/json", bytes.NewBuffer(body))
 	if err != nil {
 		return models.User{}, err
 	}
@@ -82,7 +82,7 @@ func RegisterUser(user models.User) (models.User, error) {
 }
 
 func LoginUser(user models.User) (models.User, error) {
-	collection := db.Client.Database("euprava").Collection("users")
+	collection := db.Client.Database("eupravaM").Collection("users")
 	var dbUser models.User
 	err := collection.FindOne(context.TODO(), map[string]interface{}{"email": user.Email}).Decode(&dbUser)
 	if err == mongo.ErrNoDocuments {

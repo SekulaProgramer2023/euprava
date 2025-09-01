@@ -37,12 +37,12 @@ func main() {
 
 	server := &http.Server{
 		Handler:      c.Handler(router),
-		Addr:         ":8080",
+		Addr:         ":8081",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	fmt.Println("User service started on port 8080")
+	fmt.Println("User service started on port 8081")
 	if err := server.ListenAndServe(); err != nil {
 		fmt.Println("Error starting user service:", err)
 		os.Exit(1)
