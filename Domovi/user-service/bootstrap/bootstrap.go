@@ -39,7 +39,7 @@ func InsertInitialUsers() {
 	acaUser := models.User{
 		Password: string(hashedPasswordAca),
 		Role:     "Manager",
-		Name:     "Aca",
+		Name:     "Aca1",
 		Surname:  "Admin",
 		Email:    "aca@example.com",
 		IsActive: true,

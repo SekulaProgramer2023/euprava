@@ -39,7 +39,7 @@ func InsertInitialUsers() {
 	acaUser := models.User{
 		Password: string(hashedPasswordAca),
 		Role:     "Manager",
-		Name:     "Aca",
+		Name:     "Aca2",
 		Surname:  "Admin",
 		Email:    "aca@example.com",
 		IsActive: true,
@@ -56,7 +56,7 @@ func InsertInitialUsers() {
 
 func ClearUsers() {
 
-	collection := db.Client.Database("euprava").Collection("users")
+	collection := db.Client.Database("eupravaM").Collection("users")
 	_, err := collection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		fmt.Println("Error clearing users:", err)
