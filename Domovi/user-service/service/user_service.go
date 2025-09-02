@@ -68,7 +68,7 @@ func RegisterUser(user models.User) (models.User, error) {
 	}
 
 	// 7. Pošalji POST request drugom sistemu
-	resp, err := http.Post("http://host.docker.internal/menza/users/register", "application/json", bytes.NewBuffer(body))
+	resp, err := http.Post("http://host.docker.internal:81/menza/users/register", "application/json", bytes.NewBuffer(body))
 	if err != nil {
 		return models.User{}, err
 	}

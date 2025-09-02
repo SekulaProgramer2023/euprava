@@ -1,0 +1,23 @@
+<div class="register-container">
+  <h2>Registracija</h2>
+  <form (ngSubmit)="onSubmit()">
+    <label for="name">Ime:</label>
+    <input type="text" id="name" [(ngModel)]="name" name="name" required>
+
+    <label for="surname">Prezime:</label>
+    <input type="text" id="surname" [(ngModel)]="surname" name="surname" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" [(ngModel)]="email" name="email" required>
+
+    <label for="password">Lozinka:</label>
+    <input type="password" id="password" [(ngModel)]="password" name="password" required>
+
+    <button type="submit">Registruj se</button>
+  </form>
+
+  <p>
+    Već imate nalog? 
+    <a (click)="navigateToLogin()">Ulogujte se</a>
+  </p>
+</div>
