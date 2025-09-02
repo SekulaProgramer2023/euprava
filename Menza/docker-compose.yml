@@ -12,6 +12,17 @@ services:
       - ENABLE_BOOTSTRAP=true
     networks:
       - app-network
+  jelovnik-service:
+    build: ./jelovnik-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/eupravaM
+      - ENABLE_BOOTSTRAP=true
+    networks:
+      - app-network
 
   nginx:
     image: nginx:latest
@@ -21,6 +32,7 @@ services:
       - "81:81"
     depends_on:
       - user-service
+      - jelovnik-service
     networks:
       - app-network
 

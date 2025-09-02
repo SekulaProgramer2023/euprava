@@ -37,13 +37,17 @@ func InsertInitialUsers() {
 		return
 	}
 	acaUser := models.User{
-		Password: string(hashedPasswordAca),
-		Role:     "Manager",
-		Name:     "Aca2",
-		Surname:  "Admin",
-		Email:    "aca@example.com",
-		IsActive: true,
+		Password:       string(hashedPasswordAca),
+		Role:           "Manager",
+		Name:           "Aca2",
+		Surname:        "Admin",
+		Email:          "aca@example.com",
+		IsActive:       true,
+		Alergije:       []string{"kikiriki", "mleko"}, // primer alergija
+		OmiljenaJela:   []string{"Pizza", "Pasta"},    // primer omiljenih jela
+		IndeksStudenta: "RA123/2025",                  // primer indeksa
 	}
+
 	users = append(users, acaUser)
 
 	_, err = collection.InsertMany(context.TODO(), users)
