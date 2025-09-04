@@ -13,6 +13,20 @@ services:
     networks:
       - app-network
 
+
+  sobe-service:
+    build: ./sobe-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/euprava
+      - ENABLE_BOOTSTRAP=true
+    networks:
+      - app-network
+
+
   nginx:
     image: nginx:latest
     volumes:
@@ -21,6 +35,7 @@ services:
       - "80:80"
     depends_on:
       - user-service
+      - sobe-service
     networks:
       - app-network
 
