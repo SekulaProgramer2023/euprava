@@ -31,6 +31,8 @@ func main() {
 	// Endpoints za jelovnik
 	router.HandleFunc("/jela", handlers.GetJela).Methods("GET", "OPTIONS")
 	router.HandleFunc("/jela", handlers.CreateJelo).Methods("POST", "OPTIONS")
+	router.HandleFunc("/jela/tip", handlers.GetJelaByTipHandler).Methods("GET", "OPTIONS")
+
 	router.HandleFunc("/jelovnik", handlers.CreateJelovnikHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/jelovnik", handlers.GetJelovnikeHandler).Methods("GET", "OPTIONS")
 

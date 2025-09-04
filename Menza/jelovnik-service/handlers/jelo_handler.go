@@ -37,3 +37,22 @@ func CreateJelo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(createdJelo)
 }
+func GetJelaByTipHandler(w http.ResponseWriter, r *http.Request) {
+	tip := r.URL.Query().Get("tip")
+	if tip == "" {
+		http.Error(w, "parametar 'tip' je obavezan", http.StatusBadRequest)
+		return
+	}
+
+	// Konverzija u models.TipObroka
+	tipObroka := models.TipObroka(tip)
+
+	jela, err := service.GetJelaByTip(tipObroka)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(jela)
+}

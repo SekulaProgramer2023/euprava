@@ -75,3 +75,22 @@ func CreateJelo(jelo models.Jelo) (*models.Jelo, error) {
 
 	return &jelo, nil
 }
+func GetJelaByTip(tip models.TipObroka) ([]models.Jelo, error) {
+	if !validTipovi[tip] {
+		return nil, errors.New("nevažeći tip obroka")
+	}
+
+	collection := db.Client.Database("eupravaM").Collection("jela")
+	var jela []models.Jelo
+
+	cursor, err := collection.Find(context.TODO(), bson.M{"tipObroka": tip})
+	if err != nil {
+		return nil, err
+	}
+
+	if err = cursor.All(context.TODO(), &jela); err != nil {
+		return nil, err
+	}
+
+	return jela, nil
+}
