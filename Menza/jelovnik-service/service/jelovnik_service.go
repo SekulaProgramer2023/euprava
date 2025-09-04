@@ -91,3 +91,49 @@ func GetJelovnike() ([]models.Jelovnik, error) {
 
 	return jelovnici, nil
 }
+
+// Dohvata jelovnike sa imenima jela umesto samo ID-jeva
+func GetJelovniciSaJelima() ([]map[string]interface{}, error) {
+	jelovnici, err := GetJelovnike()
+	if err != nil {
+		return nil, err
+	}
+
+	// Kolekcija jela
+	collectionJela := db.Client.Database("eupravaM").Collection("jela")
+
+	var result []map[string]interface{}
+
+	for _, jelovnik := range jelovnici {
+		// Funkcija koja vraća listu jela po ID-jevima
+		mapJela := func(ids []primitive.ObjectID) ([]models.Jelo, error) {
+			if len(ids) == 0 {
+				return []models.Jelo{}, nil
+			}
+			var jela []models.Jelo
+			cursor, err := collectionJela.Find(context.TODO(), bson.M{"_id": bson.M{"$in": ids}})
+			if err != nil {
+				return nil, err
+			}
+			if err := cursor.All(context.TODO(), &jela); err != nil {
+				return nil, err
+			}
+			return jela, nil
+		}
+
+		dorucak, _ := mapJela(jelovnik.Dorucak)
+		rucak, _ := mapJela(jelovnik.Rucak)
+		vecera, _ := mapJela(jelovnik.Vecera)
+
+		result = append(result, map[string]interface{}{
+			"jelovnikId": jelovnik.JelovnikID,
+			"datum":      jelovnik.Datum,
+			"dorucak":    dorucak,
+			"rucak":      rucak,
+			"vecera":     vecera,
+			"opis":       jelovnik.Opis,
+		})
+	}
+
+	return result, nil
+}

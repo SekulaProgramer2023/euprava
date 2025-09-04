@@ -152,3 +152,12 @@ func ClearJela() {
 		fmt.Println("Cleared jela from database")
 	}
 }
+func ClearJelovnici() {
+	collection := db.Client.Database("eupravaM").Collection("jelovnici")
+	_, err := collection.DeleteMany(context.TODO(), bson.D{})
+	if err != nil {
+		fmt.Println("Error clearing jela:", err)
+	} else {
+		fmt.Println("Cleared jela from database")
+	}
+}

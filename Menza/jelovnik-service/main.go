@@ -23,8 +23,8 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.DisconnectMongo()
-	bootstrap.ClearJela()
-	bootstrap.InsertInitialJela()
+	bootstrap.ClearJelovnici()
+
 	// Kreiranje routera
 	router := mux.NewRouter()
 
@@ -35,7 +35,7 @@ func main() {
 
 	router.HandleFunc("/jelovnik", handlers.CreateJelovnikHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/jelovnik", handlers.GetJelovnikeHandler).Methods("GET", "OPTIONS")
-
+	router.HandleFunc("/jelovnici-sa-jelima", handlers.GetJelovniciSaJelimaHandler).Methods("GET", "OPTIONS")
 	// CORS konfiguracija
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"}, // front-end origin

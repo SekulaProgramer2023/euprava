@@ -1,0 +1,64 @@
+.jelovnici-container {
+  width: 800px;
+  margin: 50px auto;
+  padding: 25px;
+  border-radius: 12px;
+  background-color: #bbdefb;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+.jelovnici-container h2 {
+  text-align: center;
+  color: #0d47a1;
+  margin-bottom: 25px;
+  font-size: 28px;
+}
+
+.jelovnik-card {
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.jelovnik-card h3 {
+  margin-top: 0;
+  color: #0d47a1;
+}
+
+.jelovnik-card p {
+  margin: 5px 0 15px 0;
+  font-size: 14px;
+  color: #0d47a1;
+}
+
+.jelovnik-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.jelovnik-column {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.jelovnik-column h4 {
+  margin-top: 0;
+  color: #0d47a1;
+  text-align: center;
+}
+
+.jelovnik-column ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.jelovnik-column li {
+  font-size: 13px;
+  color: #0d47a1;
+}
