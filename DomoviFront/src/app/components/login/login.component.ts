@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { UserService, LoginResponse } from '../../services/user.service';
 import { User } from '../../model/user.model'
 
 @Component({
@@ -23,29 +23,34 @@ export class LoginComponent {
   constructor(private userService: UserService, private router: Router) {}
 
   onSubmit(): void {
+  // Provera username-a i password-a
+  if (!this.email || !this.password) {
+    this.loginError = 'Please enter both username and password.';
+    return;
+  }
 
-    // Provera username-a i password-a
-    if (!this.email || !this.password) {
-      this.loginError = 'Please enter both username and password.';
-      return;
-    }
+  const userCredentials = {
+    email: this.email,
+    password: this.password,
+  };
 
-    const userCredentials = {
-      email: this.email,
-      password: this.password,
-    };
+  this.userService.login(this.email, this.password).subscribe({
+  next: (res: LoginResponse) => {
+    console.log('Login uspešan', res);
 
-  this.userService.login(userCredentials).subscribe({
-    next: (res) => {
-      console.log('Login uspešan', res);
-      localStorage.setItem('user_id', user_id.toString());
-      this.router.navigate(['/home']);
-    },
-    error: (err) => {
-      console.error('Greška pri login-u', err);
-    }
-  });
+    // Sačuvaj token u localStorage
+    localStorage.setItem('token', res.token);
+
+    // Preusmeri korisnika
+    this.router.navigate(['/home']);
+  },
+  error: (err) => {
+    console.error('Greška pri login-u', err);
+    this.loginError = 'Neuspešan login. Proverite email i lozinku.';
+  }
+});
 }
+
 
 
   navigateToRegister() {

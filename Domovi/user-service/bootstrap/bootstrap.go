@@ -38,13 +38,28 @@ func InsertInitialUsers() {
 	}
 	acaUser := models.User{
 		Password: string(hashedPasswordAca),
-		Role:     "Manager",
+		Role:     "Admin",
 		Name:     "Aca1",
 		Surname:  "Admin",
 		Email:    "aca@example.com",
 		IsActive: true,
 	}
+
+	hashedPasswordAna, err := bcrypt.GenerateFromPassword([]byte("Ana2024!"), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println("Error hashing password for aca:", err)
+		return
+	}
+	anaUser := models.User{
+		Password: string(hashedPasswordAna),
+		Role:     "User",
+		Name:     "Ana",
+		Surname:  "Student",
+		Email:    "ana@example.com",
+		IsActive: true,
+	}
 	users = append(users, acaUser)
+	users = append(users, anaUser)
 
 	_, err = collection.InsertMany(context.TODO(), users)
 	if err != nil {
