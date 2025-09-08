@@ -1,6 +1,8 @@
 <div class="jelovnici-container">
   <h2>Lista jelovnika</h2>
-
+  <div class="create-button-container">
+  <button [routerLink]="['/jelovnik/kreiranje-jelovnika']" *ngIf="isAdmin">Dodaj  jelovnik</button>
+</div>
   <div *ngIf="loading">Učitavanje jelovnika...</div>
 
   <div *ngIf="!loading && jelovnici.length === 0">

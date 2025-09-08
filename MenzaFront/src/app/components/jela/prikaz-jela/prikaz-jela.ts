@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { JeloService } from '../../../services/jela.service';
+import { AuthService } from '../../../services/auth.service';
 import { Jelo } from '../../../model/Jelo';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; 
@@ -14,12 +15,14 @@ import { RouterModule } from '@angular/router';
 export class PrikazJela implements OnInit {
   jela: Jelo[] = [];
   loading = true;
-  tipPretrage: string = ''; // vrednost iz input polja
+  tipPretrage: string = '';
+  isAdmin = false; // vrednost iz input polja
 
-  constructor(private jeloService: JeloService) {}
+  constructor(private jeloService: JeloService,private authService:AuthService) {}
 
   ngOnInit(): void {
     this.loadAllJela();
+    this.isAdmin = this.authService.isAdmin();
   }
 
   loadAllJela(): void {

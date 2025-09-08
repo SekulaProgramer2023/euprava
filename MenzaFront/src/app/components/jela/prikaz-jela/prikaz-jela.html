@@ -3,7 +3,7 @@
 
   <!-- Dugme za kreiranje novog jela -->
  <div class="create-button-container">
-  <button [routerLink]="['/jelovnik/kreiranje-jela']">Kreiraj novo jelo</button>
+  <button [routerLink]="['/jelovnik/kreiranje-jela']" *ngIf="isAdmin">Kreiraj novo jelo</button>
 </div>
 
 

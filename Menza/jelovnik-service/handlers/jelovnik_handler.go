@@ -10,7 +10,9 @@ import (
 )
 
 type CreateJelovnikRequest struct {
-	JeloIDs []string `json:"jela"`
+	Dorucak []string `json:"dorucak"`
+	Rucak   []string `json:"rucak"`
+	Vecera  []string `json:"vecera"`
 	Opis    string   `json:"opis,omitempty"`
 	Datum   string   `json:"datum"` // u formatu "YYYY-MM-DD"
 }
@@ -29,18 +31,38 @@ func CreateJelovnikHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Konvertuj string ID-eve u ObjectID
-	jeloIDs := []primitive.ObjectID{}
-	for _, idStr := range req.JeloIDs {
+	// Konvertuj ID-eve u ObjectID za svaki tip
+	dorucakIDs := []primitive.ObjectID{}
+	for _, idStr := range req.Dorucak {
 		objID, err := primitive.ObjectIDFromHex(idStr)
 		if err != nil {
-			http.Error(w, "Neispravan JeloID: "+idStr, http.StatusBadRequest)
+			http.Error(w, "Neispravan dorucak ID: "+idStr, http.StatusBadRequest)
 			return
 		}
-		jeloIDs = append(jeloIDs, objID)
+		dorucakIDs = append(dorucakIDs, objID)
 	}
 
-	jelovnik, err := service.CreateJelovnik(jeloIDs, req.Opis, datum)
+	rucakIDs := []primitive.ObjectID{}
+	for _, idStr := range req.Rucak {
+		objID, err := primitive.ObjectIDFromHex(idStr)
+		if err != nil {
+			http.Error(w, "Neispravan rucak ID: "+idStr, http.StatusBadRequest)
+			return
+		}
+		rucakIDs = append(rucakIDs, objID)
+	}
+
+	veceraIDs := []primitive.ObjectID{}
+	for _, idStr := range req.Vecera {
+		objID, err := primitive.ObjectIDFromHex(idStr)
+		if err != nil {
+			http.Error(w, "Neispravan vecera ID: "+idStr, http.StatusBadRequest)
+			return
+		}
+		veceraIDs = append(veceraIDs, objID)
+	}
+
+	jelovnik, err := service.CreateJelovnik(dorucakIDs, rucakIDs, veceraIDs, req.Opis, datum)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

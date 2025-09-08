@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JelovnikPrikaz } from '../model/JelovnikPrikaz';
+import { JelovnikKreiranje } from '../model/JelovnikKreiranje';
 
 @Injectable({
   providedIn: 'root'
@@ -15,4 +16,11 @@ export class JelovnikService {
   getJelovnici(): Observable<JelovnikPrikaz[]> {
     return this.http.get<JelovnikPrikaz[]>(this.apiUrl);
   }
+
+  kreirajJelovnik(jelovnik: JelovnikKreiranje): Observable<JelovnikPrikaz> {
+    return this.http.post<JelovnikPrikaz>('http://localhost:81/menza/jelovnik/jelovnik', jelovnik);
 }
+
+
+  }
+

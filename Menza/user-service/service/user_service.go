@@ -6,6 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+
+	"github.com/golang-jwt/jwt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
@@ -13,6 +17,8 @@ import (
 	"user-service/db"
 	"user-service/models"
 )
+
+var jwtSecret = []byte("1234")
 
 func GetUsers() ([]models.User, error) {
 	collection := db.Client.Database("eupravaM").Collection("users")
@@ -27,6 +33,25 @@ func GetUsers() ([]models.User, error) {
 	}
 
 	return users, nil
+}
+func GetUserByID(id string) (models.User, error) {
+	collection := db.Client.Database("eupravaM").Collection("users")
+
+	// konvertovanje stringa u ObjectID
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return models.User{}, fmt.Errorf("invalid user ID: %w", err)
+	}
+
+	var user models.User
+	err = collection.FindOne(context.TODO(), bson.M{"_id": objectID}).Decode(&user)
+	if err == mongo.ErrNoDocuments {
+		return models.User{}, errors.New("user not found")
+	} else if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
 }
 
 // RegisterUser registruje korisnika i prosleđuje ga drugom sistemu
@@ -81,22 +106,33 @@ func RegisterUser(user models.User) (models.User, error) {
 	return user, nil
 }
 
-func LoginUser(user models.User) (models.User, error) {
+func LoginUser(user models.User) (string, error) {
 	collection := db.Client.Database("eupravaM").Collection("users")
 	var dbUser models.User
-	err := collection.FindOne(context.TODO(), map[string]interface{}{"email": user.Email}).Decode(&dbUser)
+	err := collection.FindOne(context.TODO(), bson.M{"email": user.Email}).Decode(&dbUser)
 	if err == mongo.ErrNoDocuments {
-		return models.User{}, errors.New("user not found")
+		return "", errors.New("user not found")
 	} else if err != nil {
-		return models.User{}, err
+		return "", err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
-	fmt.Println(dbUser.Password)
-	fmt.Println(user.Password)
 	if err != nil {
-		return models.User{}, errors.New("invalid password")
+		return "", errors.New("invalid password")
 	}
 
-	return dbUser, nil
+	// kreiranje JWT tokena
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"userId": dbUser.ID.Hex(),
+		"email":  dbUser.Email,
+		"role":   dbUser.Role,
+		"exp":    time.Now().Add(time.Hour * 24).Unix(), // token važi 24h
+	})
+
+	tokenString, err := token.SignedString(jwtSecret)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
