@@ -5,16 +5,17 @@ import (
 )
 
 type User struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Password string             `bson:"password" json:"password"`
-	Role     string             `bson:"role" json:"role"`
-	Name     string             `bson:"name" json:"name"`
-	Surname  string             `bson:"surname" json:"surname"`
-	Email    string             `bson:"email" json:"email"`
-	IsActive bool               `bson:"isActive" json:"isActive"`
+	ID       primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
+	Password string              `bson:"password" json:"password"`
+	Role     string              `bson:"role" json:"role"`
+	Name     string              `bson:"name" json:"name"`
+	Surname  string              `bson:"surname" json:"surname"`
+	Email    string              `bson:"email" json:"email"`
+	Soba     *primitive.ObjectID `bson:"soba,omitempty" json:"soba,omitempty"`
+	IsActive bool                `bson:"isActive" json:"isActive"`
 }
 
-func NewUser(username, password, role, name, surname, email string) User {
+func NewUser(password, role, name, surname, email string) User {
 	return User{
 		Password: password,
 		Role:     role,

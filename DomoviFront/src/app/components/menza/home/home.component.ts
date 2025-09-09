@@ -34,6 +34,7 @@ export class HomeComponent2 implements OnInit {
   logout(event?: Event) {
     if (event) event.stopPropagation(); // sprečava zatvaranje dropdown-a
     localStorage.removeItem('token');
+    localStorage.removeItem('jwt');
     this.router.navigate(['/menza/login']);
   }
 

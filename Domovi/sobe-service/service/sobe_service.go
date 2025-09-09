@@ -57,6 +57,79 @@ func GetSobeWithCapacity() ([]models.Soba, error) {
 }
 
 func UseliUsera(roomID string, userID string) (*models.Soba, error) {
+	sobeCollection := db.Client.Database("euprava").Collection("sobe")
+	usersCollection := db.Client.Database("euprava").Collection("users")
+
+	// Proveri da li je user već useljen u neku sobu
+	var existingSoba models.Soba
+	err := sobeCollection.FindOne(context.TODO(), bson.M{"users": userID}).Decode(&existingSoba)
+	if err == nil {
+		return nil, fmt.Errorf("Korisnik je već useljen u sobu broj %s", existingSoba.RoomNumber)
+	} else if err != mongo.ErrNoDocuments {
+		return nil, fmt.Errorf("greška pri proveri korisnika: %w", err)
+	}
+
+	// Konvertuj roomID u ObjectID
+	objID, err := primitive.ObjectIDFromHex(roomID)
+	if err != nil {
+		return nil, fmt.Errorf("nevalidan roomID: %w", err)
+	}
+
+	// Dohvati sobu
+	var soba models.Soba
+	err = sobeCollection.FindOne(context.TODO(), bson.M{"_id": objID}).Decode(&soba)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("soba nije pronađena")
+		}
+		return nil, err
+	}
+
+	// Provera kapaciteta
+	if soba.Capacity <= 0 {
+		soba.IsFree = false // osiguravamo da je soba "full"
+		_, _ = sobeCollection.UpdateByID(context.TODO(), objID, bson.M{"$set": bson.M{"isFree": false}})
+		return nil, fmt.Errorf("soba je puna")
+	}
+
+	// Useli korisnika u sobu
+	soba.Users = append(soba.Users, userID)
+	soba.Capacity -= 1
+
+	// Ažuriranje IsFree nakon useljavanja
+	if soba.Capacity == 0 {
+		soba.IsFree = false
+	}
+
+	// Update sobe u bazi
+	_, err = sobeCollection.UpdateByID(context.TODO(), objID, bson.M{
+		"$set": bson.M{
+			"users":    soba.Users,
+			"capacity": soba.Capacity,
+			"IsFree":   soba.IsFree,
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("greška pri update-u sobe: %w", err)
+	}
+
+	// Upisi sobu kod usera
+	userObjID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return nil, fmt.Errorf("nevalidan userID: %w", err)
+	}
+
+	_, err = usersCollection.UpdateByID(context.TODO(), userObjID, bson.M{
+		"$set": bson.M{"soba": objID},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("greška pri update-u korisnika: %w", err)
+	}
+
+	return &soba, nil
+}
+
+func GetSobaByID(roomID string) (*models.Soba, error) {
 	collection := db.Client.Database("euprava").Collection("sobe")
 
 	// Konvertuj string u ObjectID
@@ -65,37 +138,14 @@ func UseliUsera(roomID string, userID string) (*models.Soba, error) {
 		return nil, fmt.Errorf("nevalidan roomID: %w", err)
 	}
 
-	// Dohvati sobu
+	// Pronađi sobu
 	var soba models.Soba
 	err = collection.FindOne(context.TODO(), bson.M{"_id": objID}).Decode(&soba)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, fmt.Errorf("soba nije pronađena")
 		}
-		return nil, err
-	}
-
-	if !soba.IsFree || soba.Capacity <= 0 {
-		return nil, fmt.Errorf("soba je puna")
-	}
-
-	soba.Users = append(soba.Users, userID)
-	soba.Capacity -= 1
-	if soba.Capacity == 0 {
-		soba.IsFree = false
-	}
-
-	update := bson.M{
-		"$set": bson.M{
-			"users":    soba.Users,
-			"capacity": soba.Capacity,
-			"isFree":   soba.IsFree,
-		},
-	}
-
-	_, err = collection.UpdateByID(context.TODO(), objID, update)
-	if err != nil {
-		return nil, fmt.Errorf("greška pri update-u sobe: %w", err)
+		return nil, fmt.Errorf("greška pri dohvaćanju sobe: %w", err)
 	}
 
 	return &soba, nil

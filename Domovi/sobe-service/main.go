@@ -25,6 +25,7 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/sobe", handlers.GetSobeHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/sobe/{id}", handlers.GetSobaByIDHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/sobeSaKapacitetom", handlers.GetSobeWithCapacityHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/kreirajSobu", handlers.CreateSobaHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/useliStudenta", handlers.UseliUseraHandler).Methods("POST", "OPTIONS")

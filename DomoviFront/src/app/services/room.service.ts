@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Soba } from '../model/soba.model';
 
-export interface Soba {
+export interface Soba2 {
   id: string;
   roomNumber: string;
   capacity: number;
   users: string[];
-  onBudget: boolean;
   IsFree: boolean;
 }
 
@@ -19,11 +19,15 @@ export class RoomService {
 
   constructor(private http: HttpClient) {}
 
-  getSobe(): Observable<Soba[]> {
-    return this.http.get<Soba[]>(`${this.baseUrl}/sobe`);
+  getSobe(): Observable<Soba2[]> {
+    return this.http.get<Soba2[]>(`${this.baseUrl}/sobe`);
   }
 
   useliStudenta(roomId: string, userId: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/useliStudenta`, { roomId, userId });
   }
+
+  getSobaById(id: string): Observable<Soba> {
+  return this.http.get<Soba>(`${this.baseUrl}/sobe/${id}`);
+}
 }

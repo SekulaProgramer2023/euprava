@@ -33,11 +33,13 @@
     </div>
 
     <div class="profile-info">
-      <p><strong>Ime:</strong> {{ user.name }}</p>
-      <p><strong>Prezime:</strong> {{ user.surname }}</p>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>Uloga:</strong> {{ user.role }}</p>
-    </div>
+  <p><strong>Ime:</strong> {{ user?.name }}</p>
+  <p><strong>Prezime:</strong> {{ user?.surname }}</p>
+  <p><strong>Email:</strong> {{ user?.email }}</p>
+  <p><strong>Soba:</strong> {{ roomNumber }}</p>
+  <p><strong>Uloga:</strong> {{ user?.role }}</p>
+</div>
+
   </div>
 </div>
 

@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
+	"math/rand"
 	"os"
+	"time"
 	"user-service/db"
 	"user-service/models"
 )
@@ -30,7 +32,7 @@ func InsertInitialUsers() {
 	// Dodaj unapred definisane korisnike
 	var users []interface{}
 
-	// Dodavanje korisnika "aca"
+	// Dodavanje korisnika "aca" (Admin)
 	hashedPasswordAca, err := bcrypt.GenerateFromPassword([]byte("Aca2024!"), bcrypt.DefaultCost)
 	if err != nil {
 		fmt.Println("Error hashing password for aca:", err)
@@ -45,9 +47,10 @@ func InsertInitialUsers() {
 		IsActive: true,
 	}
 
+	// Dodavanje korisnika "ana" (User)
 	hashedPasswordAna, err := bcrypt.GenerateFromPassword([]byte("Ana2024!"), bcrypt.DefaultCost)
 	if err != nil {
-		fmt.Println("Error hashing password for aca:", err)
+		fmt.Println("Error hashing password for ana:", err)
 		return
 	}
 	anaUser := models.User{
@@ -58,19 +61,45 @@ func InsertInitialUsers() {
 		Email:    "ana@example.com",
 		IsActive: true,
 	}
-	users = append(users, acaUser)
-	users = append(users, anaUser)
+
+	users = append(users, acaUser, anaUser)
+
+	// Generisanje 5 random korisnika
+	rand.Seed(time.Now().UnixNano())
+	firstNames := []string{"Marko", "Jovan", "Petar", "Miloš", "Nikola", "Stefan", "Luka"}
+	lastNames := []string{"Jovanović", "Petrović", "Nikolić", "Marković", "Stojanović", "Matić", "Lazarević"}
+
+	for i := 1; i <= 5; i++ {
+		fn := firstNames[rand.Intn(len(firstNames))]
+		ln := lastNames[rand.Intn(len(lastNames))]
+		email := fmt.Sprintf("%s%d@example.com", fn, rand.Intn(1000))
+		password := "User2024!" // default password
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			fmt.Println("Error hashing password for user:", fn, err)
+			continue
+		}
+
+		user := models.User{
+			Password: string(hashedPassword),
+			Role:     "User",
+			Name:     fn,
+			Surname:  ln,
+			Email:    email,
+			IsActive: true,
+		}
+		users = append(users, user)
+	}
 
 	_, err = collection.InsertMany(context.TODO(), users)
 	if err != nil {
 		fmt.Println("Error inserting initial users:", err)
 	} else {
-		fmt.Println("Inserted initial users including 'aca' and 'ana'")
+		fmt.Println("Inserted initial users including 'aca', 'ana' and 5 random users")
 	}
 }
 
 func ClearUsers() {
-
 	collection := db.Client.Database("euprava").Collection("users")
 	_, err := collection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {

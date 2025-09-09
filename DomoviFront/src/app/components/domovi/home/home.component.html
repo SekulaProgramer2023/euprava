@@ -27,19 +27,39 @@
 
   <div class="cards-container">
   <div *ngFor="let soba of sobe" class="soba-card" [ngClass]="soba.IsFree ? 'slobodna' : 'zauzeta'">
-    <h3>Soba {{ soba.roomNumber }}</h3>
-    <p>Status: {{ soba.IsFree ? 'Slobodna' : 'Zauzeta' }}</p>
-    <p>Kapacitet: {{ soba.capacity }}</p>
+  <h3>Soba {{ soba.roomNumber }}</h3>
+  <p>Status: {{ soba.IsFree ? 'Slobodna' : 'Zauzeta' }}</p>
+  <p>Kapacitet: {{ soba.capacity }}</p>
 
-    <!-- Dugme samo ako je role == user -->
-    <button class="useliSe" 
-        *ngIf="role === 'User'" 
-        [disabled]="!soba.IsFree"
-        (click)="useliStudenta(soba.id)">
-  Useli se
-</button>
-
+  <!-- Prikaz studenata ako je admin -->
+<div *ngIf="role === 'Admin' && soba.users.length > 0" class="students-container">
+  <p style="text-align: center;">Studenti u sobi:</p>
+  <div class="students-tags">
+    <span *ngFor="let userId of soba.users" class="student-tag">
+      👤 {{ userMap[userId]?.name }} {{ userMap[userId]?.surname }}
+    </span>
   </div>
 </div>
 
+
+  <!-- Dugme samo ako je role == user -->
+  <button class="useliSe" 
+      *ngIf="role === 'User'" 
+      [disabled]="!soba.IsFree"
+      (click)="useliStudenta(soba.id)">
+    Useli se
+  </button>
+</div>
+
+
+</div>
+
+
+<!-- Modal za greške -->
+<div class="modal-backdrop" *ngIf="showErrorModal">
+  <div class="modal">
+    <h2>Greška</h2>
+    <p>{{ errorMessage }}</p>
+    <button (click)="closeErrorModal()">OK</button>
+  </div>
 </div>
