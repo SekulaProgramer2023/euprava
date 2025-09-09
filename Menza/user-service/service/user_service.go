@@ -51,6 +51,14 @@ func GetUserByID(id string) (models.User, error) {
 		return models.User{}, err
 	}
 
+	// Osiguraj da alergije i omiljena jela nisu nil
+	if user.Alergije == nil {
+		user.Alergije = []string{}
+	}
+	if user.OmiljenaJela == nil {
+		user.OmiljenaJela = []string{}
+	}
+
 	return user, nil
 }
 
@@ -105,6 +113,19 @@ func RegisterUser(user models.User) (models.User, error) {
 
 	return user, nil
 }
+func GetUserByEmail(email string) (models.User, error) {
+	collection := db.Client.Database("eupravaM").Collection("users")
+
+	var user models.User
+	err := collection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&user)
+	if err == mongo.ErrNoDocuments {
+		return models.User{}, errors.New("user not found")
+	} else if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
 
 func LoginUser(user models.User) (string, error) {
 	collection := db.Client.Database("eupravaM").Collection("users")
@@ -135,4 +156,38 @@ func LoginUser(user models.User) (string, error) {
 	}
 
 	return tokenString, nil
+}
+func UpdateAlergije(userID string, alergije []string) error {
+	collection := db.Client.Database("eupravaM").Collection("users")
+
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return fmt.Errorf("invalid user ID: %w", err)
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"alergije": alergije, // menja celu listu
+		},
+	}
+
+	_, err = collection.UpdateByID(context.TODO(), objID, update)
+	return err
+}
+func UpdateOmiljenaJela(userID string, jela []string) error {
+	collection := db.Client.Database("eupravaM").Collection("users")
+
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return fmt.Errorf("invalid user ID: %w", err)
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"omiljenaJela": jela, // menja celu listu
+		},
+	}
+
+	_, err = collection.UpdateByID(context.TODO(), objID, update)
+	return err
 }

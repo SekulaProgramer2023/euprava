@@ -47,6 +47,30 @@ export class UserService {
     return null;
   }
 }
+// 🔹 Dodaj jednu ili više alergija
+addAlergija(userId: string, alergije: string[]): Observable<User> {
+  return this.http.put<User>(`${this.baseUrl}/users/${userId}/alergije`, alergije);
+}
+
+// 🔹 Dodaj jedno ili više omiljenih jela
+addOmiljenoJelo(userId: string, jela: string[]): Observable<User> {
+  return this.http.put<User>(`${this.baseUrl}/users/${userId}/jela`, jela);
+}
+getUserByEmail(email: string): Observable<User> {
+  return this.http.get<User>(`${this.baseUrl}/email/${email}`);
+}
+getEmailFromToken(): string | null {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split('.')[0])); // dekodira middle deo tokena
+    return payload.email || null;
+  } catch (e) {
+    console.error('Greška pri parsiranju tokena', e);
+    return null;
+  }
+}
 
 
 

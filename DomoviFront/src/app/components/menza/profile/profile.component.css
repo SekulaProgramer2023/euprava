@@ -163,4 +163,81 @@ body {
   font-size: 20px;   /* povećan tekst informacija */
 }
 
+/* 🔹 Alergije i omiljena jela */
+/* 🔹 Alergije i omiljena jela */
+.user-list-card {
+  background-color: #ffffff;
+  padding: 25px 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+  text-align: left;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
 
+.user-list-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+.user-list-card h3 {
+  color: #1976d2;
+  font-size: 24px;
+  margin-bottom: 18px;
+}
+
+.user-list-card ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.user-list-card li {
+  background-color: #90caf9;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 16px;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.user-list-card li:hover {
+  background-color: #42a5f5;
+  transform: scale(1.05);
+}
+
+/* input i dropdown grupa */
+.user-list-card .input-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.user-list-card input[type="text"],
+.user-list-card select {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.user-list-card button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: #1976d2;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.user-list-card button:hover {
+  background-color: #1565c0;
+  transform: translateY(-2px);
+}

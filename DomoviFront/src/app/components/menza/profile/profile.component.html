@@ -37,6 +37,32 @@
       <p><strong>Prezime:</strong> {{ user.surname }}</p>
       <p><strong>Email:</strong> {{ user.email }}</p>
       <p><strong>Uloga:</strong> {{ user.role }}</p>
+      <!-- Alergije -->
+<div *ngIf="user" class="user-list-card">
+  <h3>Alergije</h3>
+  <ul>
+    <li *ngFor="let a of user.alergije">{{ a }}</li>
+  </ul>
+  <div class="input-group">
+    <input type="text" placeholder="Dodaj alergiju" [(ngModel)]="newAlergija">
+    <button (click)="addAlergija()">Dodaj</button>
+  </div>
+</div>
+
+<div *ngIf="user" class="user-list-card">
+  <h3>Omiljena jela</h3>
+  <ul>
+    <li *ngFor="let j of user.omiljenaJela">{{ j }}</li>
+  </ul>
+  <div class="input-group">
+    <select [(ngModel)]="newOmiljenoJelo">
+      <option value="" disabled selected>Izaberi jelo</option>
+      <option *ngFor="let jelo of allJela" [value]="jelo.naziv">{{ jelo.naziv }}</option>
+    </select>
+    <button (click)="addOmiljenoJelo()">Dodaj</button>
+  </div>
+</div>
+
     </div>
   </div>
 </div>

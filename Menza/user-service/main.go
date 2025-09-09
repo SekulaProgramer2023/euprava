@@ -28,7 +28,10 @@ func main() {
 	router.HandleFunc("/users", handlers.GetUsers).Methods("GET", "OPTIONS")
 	router.HandleFunc("/register", handlers.RegisterUserHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/users/{id}", handlers.GetUserByIDHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/users/email/{email:.+}", handlers.GetUserByEmailHandler).Methods("GET", "OPTIONS")
 
+	router.HandleFunc("/users/{id}/alergije", handlers.UpdateAlergijeHandler).Methods("PUT", "OPTIONS")
+	router.HandleFunc("/users/{id}/jela", handlers.UpdateOmiljenaJelaHandler).Methods("PUT", "OPTIONS")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},

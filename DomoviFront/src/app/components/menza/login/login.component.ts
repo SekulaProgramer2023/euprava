@@ -18,7 +18,18 @@ export class LoginComponent2 {
   loginError: string = '';
 
 
-    user: User = new User('', '', '', '', '', '','');
+    user: User = new User(
+  '',   // id
+  '',   // password
+  '',   // role
+  '',   // name
+  '',   // surname
+  '',   // email
+  false, // isActive
+  [],    // alergije
+  []     // omiljenaJela
+);
+
 
   constructor(private userService: UserService, private router: Router) {}
 
