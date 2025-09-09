@@ -1,0 +1,47 @@
+<nav class="navbar">
+  <div class="navbar-left">
+    <img src="https://www.scns.rs/wp-content/uploads/2024/03/SC-Novi-Sad-logo-horizontalni.png" alt="Logo" class="logo"
+    (click)="goHome()"
+    style="cursor: pointer;">
+  </div>
+
+  <div class="navbar-center">
+    <span class="navbar-title">Studentski domovi</span>
+  </div>
+
+  <div class="navbar-right">
+    <div class="profile-container" (click)="toggleDropdown()">
+      <img src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg" alt="Profil" class="profile-pic">
+      
+      <!-- Dropdown meni -->
+      <div class="dropdown-menu" *ngIf="dropdownOpen">
+        <button (click)="goToProfile($event)">Profile</button>
+        <button (click)="logout($event)">Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<div *ngIf="user; else noUser" class="profile-container">
+  <div class="profile-card">
+    <div class="profile-header">
+      <img src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg" 
+           alt="Profil" class="profile-avatar">
+      <h2>{{ user.name }} {{ user.surname }}</h2>
+      <p class="profile-email">{{ user.email }}</p>
+    </div>
+
+    <div class="profile-info">
+      <p><strong>Ime:</strong> {{ user.name }}</p>
+      <p><strong>Prezime:</strong> {{ user.surname }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Uloga:</strong> {{ user.role }}</p>
+    </div>
+  </div>
+</div>
+
+<ng-template #noUser>
+  <p>Korisnik nije učitan.</p>
+</ng-template>
+

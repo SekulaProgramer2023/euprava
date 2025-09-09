@@ -1,0 +1,45 @@
+<nav class="navbar">
+  <div class="navbar-left">
+    <img src="https://www.scns.rs/wp-content/uploads/2024/03/SC-Novi-Sad-logo-horizontalni.png" alt="Logo" class="logo">
+    <a [routerLink]="['/menza/home']" class="nav-link" id="dom">Stranica Menza</a>
+  </div>
+
+  <div class="navbar-center">
+    <span class="navbar-title">Studentski domovi</span>
+  </div>
+
+  <div class="navbar-right">
+    <div class="profile-container" (click)="toggleDropdown()">
+      <img src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg" alt="Profil" class="profile-pic">
+      
+      <!-- Dropdown meni -->
+      <div class="dropdown-menu" *ngIf="dropdownOpen">
+        <button (click)="goToProfile($event)">Profile</button>
+        <button (click)="logout($event)">Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<div class="home-container">
+  <h1>Raspoloživost soba</h1>
+
+  <div class="cards-container">
+  <div *ngFor="let soba of sobe" class="soba-card" [ngClass]="soba.IsFree ? 'slobodna' : 'zauzeta'">
+    <h3>Soba {{ soba.roomNumber }}</h3>
+    <p>Status: {{ soba.IsFree ? 'Slobodna' : 'Zauzeta' }}</p>
+    <p>Kapacitet: {{ soba.capacity }}</p>
+
+    <!-- Dugme samo ako je role == user -->
+    <button class="useliSe" 
+        *ngIf="role === 'User'" 
+        [disabled]="!soba.IsFree"
+        (click)="useliStudenta(soba.id)">
+  Useli se
+</button>
+
+  </div>
+</div>
+
+</div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RoomService, Soba } from '../../services/room.service';
+import { RoomService, Soba } from '../../../services/room.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -55,12 +55,12 @@ export class HomeComponent implements OnInit {
   logout(event?: Event) {
     if(event) event.stopPropagation(); // sprečava zatvaranje dropdown-a
     localStorage.removeItem('token');
-    this.router.navigate(['/login']);
+    this.router.navigate(['/domovi/login']);
   }
 
   goToProfile(event: Event) {
   event.stopPropagation();
-  this.router.navigate(['/profile']); // vodi na profile komponentu
+  this.router.navigate(['/domovi/profile']); // vodi na profile komponentu
 }
 }
 

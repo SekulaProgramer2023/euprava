@@ -1,0 +1,37 @@
+<div class="jelovnici-container">
+  <h2>Lista jelovnika</h2>
+  <div class="create-button-container">
+  <button [routerLink]="['/menza/jelovnik/kreiranje-jelovnika']" *ngIf="isAdmin">Dodaj  jelovnik</button>
+</div>
+  <div *ngIf="loading">Učitavanje jelovnika...</div>
+
+  <div *ngIf="!loading && jelovnici.length === 0">
+    Nema dostupnih jelovnika.
+  </div>
+
+  <div *ngFor="let jelovnik of jelovnici" class="jelovnik-card">
+    <h3>{{ jelovnik.datum | date:'dd.MM.yyyy' }}</h3>
+    <p *ngIf="jelovnik.opis"><strong>Opis:</strong> {{ jelovnik.opis }}</p>
+
+    <div class="jelovnik-grid">
+      <div class="jelovnik-column">
+        <h4>Doručak</h4>
+        <ul>
+          <li *ngFor="let jelo of jelovnik.dorucak">{{ jelo.naziv }} ({{ jelo.kategorija }})</li>
+        </ul>
+      </div>
+      <div class="jelovnik-column">
+        <h4>Ručak</h4>
+        <ul>
+          <li *ngFor="let jelo of jelovnik.rucak">{{ jelo.naziv }} ({{ jelo.kategorija }})</li>
+        </ul>
+      </div>
+      <div class="jelovnik-column">
+        <h4>Večera</h4>
+        <ul>
+          <li *ngFor="let jelo of jelovnik.vecera">{{ jelo.naziv }} ({{ jelo.kategorija }})</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

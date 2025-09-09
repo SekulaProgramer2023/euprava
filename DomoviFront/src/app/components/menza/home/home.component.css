@@ -14,7 +14,17 @@ body {
   background-color: #90caf9;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   width: 100%;
-  box-sizing: border-box; /* da padding ne utiče na širinu */
+  box-sizing: border-box;
+}
+
+.navbar-left{
+    display: flex;
+    align-items: center;
+}
+
+.navbar-left a:hover{
+  border: 1px solid gray;
+  background-color: #1976d2;
 }
 
 /* Logo */
@@ -31,7 +41,7 @@ body {
 .navbar-title {
   font-size: 40px;
   font-weight: bold;
-    font-family: "Rubik", sans-serif
+  font-family: "Rubik", sans-serif;
 }
 
 /* Profilna slika */
@@ -48,40 +58,7 @@ body {
   margin-top: 50px;
 }
 
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 30px;
-}
-
-.soba-card {
-  width: 150px;
-  padding: 15px;
-  border-radius: 8px;
-  color: white;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  font-weight: bold;
-}
-
-.soba-card.slobodna {
-  background-color: #28a745; /* zelena */
-}
-
-.soba-card.zauzeta {
-  background-color: #dc3545; /* crvena */
-}
-
-.soba-card h3 {
-  margin: 0 0 10px 0;
-}
-
-.soba-card p {
-  margin: 5px 0;
-}
-
+/* Dropdown meni */
 .profile-container {
   position: relative;
   cursor: pointer;
@@ -113,33 +90,31 @@ body {
 .dropdown-menu button:hover {
   background-color: #f5f5f5;
 }
+/* Link u navbaru (desno, pre profila) */
+/* Da sve u navbar-right bude u istoj liniji */
+.navbar-right {
+  display: flex;
+  align-items: center; /* vertikalno centriranje */
+}
 
-.useliSe {
-  background-color: #1c629c;;   /* zelena */
+/* Dugme za Jela - sada će biti tačno levo od profila */
+.nav-link {
+  margin-right: 15px; /* razmak između Jela i profilne slike */
+  padding: 8px 15px;
+  border-radius: 5px;
+  background-color: #64b5f6;
   color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
 }
 
-.useliSe:hover {
-  background-color: #90caf9;   /* tamnija zelena */
-  transform: scale(1.05);
+.nav-link:hover {
+  background-color: #42a5f5;
 }
 
-.useliSe:active {
-  background-color: #90caf9;
-  transform: scale(0.98);
-}
+#dom{
+  margin-left: 20px;
+  margin-bottom: 5px !important;
 
-.useliSe:disabled {
-  background-color: #cccccc;
-  color: #666666;
-  cursor: not-allowed;
-  transform: none;
 }
-

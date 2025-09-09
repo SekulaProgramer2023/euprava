@@ -1,0 +1,68 @@
+.login-container {
+  width: 350px;
+  margin: 80px auto;
+  padding: 30px;
+  border-radius: 12px;
+  background-color: #bbdefb; /* svetloplava pozadina forme */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.login-container h2 {
+  text-align: center;
+  color: #0d47a1; /* tamnoplava */
+  margin-bottom: 25px;
+  font-size: 28px;
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-container label {
+  margin: 10px 0 5px;
+  color: #0d47a1;
+  font-weight: bold;
+}
+
+.login-container input {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #90caf9;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.login-container button {
+  padding: 12px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.login-container button:hover {
+  background-color: #0d47a1;
+}
+
+.switch-link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+a {
+  color: #1976d2;        /* plava boja */
+  text-decoration: underline; /* uvek podvučeno */
+  cursor: pointer;       /* pokazivač ruke kada hover */
+  font-weight: bold;
+}
+
+a:hover {
+  color: #0d47a1;        /* tamnoplava na hover */
+  text-decoration: underline; /* i dalje podvučeno */
+}
+

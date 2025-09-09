@@ -1,0 +1,30 @@
+<div class="kreiranje-container">
+  <h2>Kreiranje novog jela</h2>
+  <form (ngSubmit)="addJelo()">
+
+    <label>Naziv:</label>
+    <input type="text" [(ngModel)]="jelo.naziv" name="naziv" required />
+
+    <label>Kategorija:</label>
+    <select [(ngModel)]="jelo.kategorija" name="kategorija">
+      <option *ngFor="let k of kategorije" [value]="k">{{ k }}</option>
+    </select>
+
+    <label>Tip obroka:</label>
+    <select [(ngModel)]="jelo.tipObroka" name="tipObroka">
+      <option *ngFor="let t of tipoviObroka" [value]="t">{{ t }}</option>
+    </select>
+
+    <label>Kalorije:</label>
+    <input type="number" [(ngModel)]="jelo.kalorije" name="kalorije" required />
+
+    <div class="nutritijenti-container">
+      <div *ngFor="let key of nutritijentiKeys">
+        <label>{{ key }}:</label>
+        <input type="number" [(ngModel)]="jelo.nutritijenti[key]" name="{{key}}" />
+      </div>
+    </div>
+
+    <button type="submit">Kreiraj jelo</button>
+  </form>
+</div>

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { UserService, LoginResponse } from '../../services/user.service';
-import { User } from '../../model/user.model'
+import { UserService, LoginResponse } from '../../../services/user.service2';
+import { User } from '../../../model/User'
 
 @Component({
   selector: 'app-login',
@@ -11,7 +11,7 @@ import { User } from '../../model/user.model'
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']  // svaki komponent ima svoj css
 })
-export class LoginComponent {
+export class LoginComponent2 {
 
   email: string = '';
   password: string = '';
@@ -42,7 +42,7 @@ export class LoginComponent {
     localStorage.setItem('token', res.token);
 
     // Preusmeri korisnika
-    this.router.navigate(['/home']);
+    this.router.navigate(['/menza/home']);
   },
   error: (err) => {
     console.error('Greška pri login-u', err);

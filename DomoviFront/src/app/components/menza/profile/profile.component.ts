@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service';
-import { User } from '../../model/user.model';
+import { UserService } from '../../../services/user.service2';
+import { User } from '../../../model/User';
 
 @Component({
   selector: 'app-profile',
@@ -12,7 +12,7 @@ import { User } from '../../model/user.model';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent2 implements OnInit {
   dropdownOpen: boolean = false;
   user: User | null = null;
 
@@ -36,17 +36,17 @@ toggleDropdown() {
   logout(event?: Event) {
     if(event) event.stopPropagation(); // sprečava zatvaranje dropdown-a
     localStorage.removeItem('token');
-    this.router.navigate(['/login']);
+    this.router.navigate(['/menza/login']);
   }
 
   goToProfile(event: Event) {
   event.stopPropagation();
-  this.router.navigate(['/profile']); // vodi na profile komponentu
+  this.router.navigate(['/menza/profile']); // vodi na profile komponentu
 }
 
   
   goHome() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/menza/home']);
   }
 
 }

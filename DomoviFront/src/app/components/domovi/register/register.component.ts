@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService, RegisterData } from '../../services/user.service';
+import { UserService, RegisterData } from '../../../services/user.service';
 
 @Component({
   selector: 'app-register',
@@ -34,7 +34,7 @@ export class RegisterComponent {
     this.userService.register(data).subscribe({
       next: (res) => {
         console.log('Korisnik registrovan', res);
-        this.router.navigate(['/login']);
+        this.router.navigate(['/domovi/login']);
       },
       error: (err) => {
         console.error('Greška pri registraciji', err);
@@ -43,6 +43,6 @@ export class RegisterComponent {
   }
 
   navigateToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/domovi/login']);
   }
 }

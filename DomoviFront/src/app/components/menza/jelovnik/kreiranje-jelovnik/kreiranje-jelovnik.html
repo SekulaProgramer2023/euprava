@@ -1,0 +1,44 @@
+<div class="kreiranje-jelovnik-container">
+  <h2>Kreiranje Jelovnika</h2>
+
+  <!-- Doručak -->
+  <div class="obrok-section">
+    <label for="dorucak">Doručak:</label>
+    <select id="dorucak" multiple [(ngModel)]="izabraniDorucak">
+      <option *ngFor="let j of dorucakJela" [value]="j.jeloId">{{ j.naziv }}</option>
+    </select>
+  </div>
+
+  <!-- Ručak -->
+  <div class="obrok-section">
+    <label for="rucak">Ručak:</label>
+    <select id="rucak" multiple [(ngModel)]="izabraniRucak">
+      <option *ngFor="let j of rucakJela" [value]="j.jeloId">{{ j.naziv }}</option>
+    </select>
+  </div>
+
+  <!-- Večera -->
+  <div class="obrok-section">
+    <label for="vecera">Večera:</label>
+    <select id="vecera" multiple [(ngModel)]="izabranaVecera">
+      <option *ngFor="let j of veceraJela" [value]="j.jeloId">{{ j.naziv }}</option>
+    </select>
+  </div>
+
+  <!-- Datum -->
+  <div class="datum-section">
+    <label for="datum">Datum jelovnika:</label>
+    <input type="date" id="datum" [(ngModel)]="datum">
+  </div>
+
+  <!-- Opis -->
+  <div class="opis-section">
+    <label for="opis">Opis (opciono):</label>
+    <input type="text" id="opis" [(ngModel)]="opis" placeholder="Opis jelovnika">
+  </div>
+
+  <!-- Dugme za kreiranje -->
+  <div class="button-section">
+    <button (click)="kreirajJelovnik()">Kreiraj Jelovnik</button>
+  </div>
+</div>

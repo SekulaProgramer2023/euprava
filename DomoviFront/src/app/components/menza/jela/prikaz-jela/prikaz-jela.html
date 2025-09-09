@@ -1,0 +1,47 @@
+<div class="jela-container">
+  <h2>Lista jela</h2>
+
+  <!-- Dugme za kreiranje novog jela -->
+ <div class="create-button-container">
+  <button [routerLink]="['/menza/jelovnik/kreiranje-jela']" *ngIf="isAdmin">Kreiraj novo jelo</button>
+</div>
+
+
+  <!-- Dropdown za tip obroka -->
+  <div class="search-container">
+    <label for="tip">Filtriraj po tipu obroka:</label>
+    <select id="tip" [(ngModel)]="tipPretrage" (change)="searchByTip()">
+      <option value="">Svi</option>
+      <option value="dorucak">Doručak</option>
+      <option value="rucak">Ručak</option>
+      <option value="vecera">Večera</option>
+    </select>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    Učitavanje jela...
+  </div>
+
+  <!-- Kada nema jela -->
+  <div *ngIf="!loading && jela.length === 0" class="no-jela">
+    Nema dostupnih jela.
+  </div>
+
+  <!-- Lista jela -->
+  <div *ngFor="let jelo of jela" class="jelo-card">
+    <h3>{{ jelo.naziv }}</h3>
+    <p><strong>Kategorija:</strong> {{ jelo.kategorija }}</p>
+    <p><strong>Tip obroka:</strong> {{ jelo.tipObroka }}</p>
+    <p><strong>Kalorije:</strong> {{ jelo.kalorije }}</p>
+
+    <div *ngIf="jelo.nutritijenti">
+      <h4>Nutritijenti:</h4>
+      <ul>
+        <li *ngFor="let item of (jelo.nutritijenti | keyvalue)">
+          {{ item.key }}: {{ item.value }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+.kreiranje-container {
+  width: 700px; /* ista širina kao jela-container */
+  margin: 50px auto;
+  padding: 25px;
+  border-radius: 12px;
+  background-color: #bbdefb; /* ista plava nijansa */
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+.kreiranje-container h2 {
+  text-align: center;
+  color: #0d47a1;
+  margin-bottom: 25px;
+  font-size: 28px;
+}
+
+.kreiranje-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.kreiranje-container label {
+  margin: 10px 0 5px;
+  color: #0d47a1;
+  font-weight: bold;
+}
+
+.kreiranje-container input,
+.kreiranje-container select {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #90caf9;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.kreiranje-container button {
+  padding: 12px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+}
+
+.kreiranje-container button:hover {
+  background-color: #0d47a1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.nutritijenti-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.nutritijenti-container div {
+  flex: 1 1 120px;
+}

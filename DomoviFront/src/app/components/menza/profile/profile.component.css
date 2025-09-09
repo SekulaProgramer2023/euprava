@@ -1,0 +1,166 @@
+/* Uklanjanje default margina i paddinga */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Navbar stilovi */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #90caf9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  box-sizing: border-box; /* da padding ne utiče na širinu */
+}
+
+/* Logo */
+.navbar-left .logo {
+  height: 50px;
+}
+
+.navbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.navbar-title {
+  font-size: 40px;
+  font-weight: bold;
+    font-family: "Rubik", sans-serif
+}
+
+/* Profilna slika */
+.navbar-right .profile-pic {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Glavni sadržaj */
+.home-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.soba-card {
+  width: 150px;
+  padding: 15px;
+  border-radius: 8px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-weight: bold;
+}
+
+.soba-card.slobodna {
+  background-color: #28a745; /* zelena */
+}
+
+.soba-card.zauzeta {
+  background-color: #dc3545; /* crvena */
+}
+
+.soba-card h3 {
+  margin: 0 0 10px 0;
+}
+
+.soba-card p {
+  margin: 5px 0;
+}
+
+.profile-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  overflow: hidden;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-menu button {
+  background: none;
+  border: none;
+  padding: 10px 30px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f5f5f5;
+}
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 600px;   /* povećano */
+  width: 100%;
+  box-shadow: 0px 6px 20px rgba(0,0,0,0.15);
+  text-align: center;
+  font-family: 'Rubik', sans-serif;
+}
+
+.profile-header {
+  margin-bottom: 25px;
+}
+
+.profile-avatar {
+  width: 150px;      /* veći avatar */
+  height: 150px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  border: 4px solid #1976d2;
+}
+
+.profile-card h2 {
+  font-size: 28px;   /* veće ime */
+  margin-bottom: 5px;
+}
+
+.profile-email {
+  color: gray;
+  font-size: 18px;
+}
+
+.profile-info {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.profile-info p {
+  margin: 12px 0;
+  font-size: 20px;   /* povećan tekst informacija */
+}
+
+
