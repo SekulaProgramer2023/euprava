@@ -23,6 +23,17 @@ services:
       - ENABLE_BOOTSTRAP=true
     networks:
       - app-network
+  finansijskakartica-service:
+    build: ./finansijskaKartica-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/eupravaM
+      - ENABLE_BOOTSTRAP=true
+    networks:
+      - app-network
 
   nginx:
     image: nginx:latest
@@ -32,6 +43,7 @@ services:
       - "81:81"
     depends_on:
       - user-service
+      - finansijskakartica-service
     networks:
       - app-network
 

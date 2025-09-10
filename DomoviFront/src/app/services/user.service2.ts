@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../model/User'
+import { FinansijskaKartica } from '../model/FinansijskaKartica'
 export interface LoginResponse {
   token: string;
   userId?: string;
@@ -21,7 +22,7 @@ export interface RegisterData {
 })
 export class UserService {
   private baseUrl = 'http://localhost:81/menza/users';
-
+   private karticaUrl = 'http://localhost:81/menza/finansijskaKartica/kartice'; 
   constructor(private http: HttpClient) {}
 
  login(email: string, password: string): Observable<LoginResponse> {
@@ -71,7 +72,9 @@ getEmailFromToken(): string | null {
   getUserByEmail(email: string): Observable<User> {
     return this.http.post<User>(`${this.baseUrl}/by-email`, { email });
   }
-
+   getKarticaByUser(userId: string): Observable<FinansijskaKartica> {
+    return this.http.get<FinansijskaKartica>(`${this.karticaUrl}/user/${userId}`);
+  }
 
 
 }

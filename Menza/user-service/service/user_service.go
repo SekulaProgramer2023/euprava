@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"io"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -62,9 +63,9 @@ func GetUserByID(id string) (models.User, error) {
 	return user, nil
 }
 
-// RegisterUser registruje korisnika i prosleđuje ga drugom sistemu
 func RegisterUser(user models.User) (models.User, error) {
 	collection := db.Client.Database("eupravaM").Collection("users")
+	fmt.Println("111")
 
 	// 1. Provera da li korisnik već postoji
 	var existingUser models.User
@@ -86,7 +87,7 @@ func RegisterUser(user models.User) (models.User, error) {
 	user.Password = string(hashedPassword)
 
 	// 4. Sačuvaj u MongoDB
-	_, err = collection.InsertOne(context.TODO(), user)
+	result, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -94,22 +95,66 @@ func RegisterUser(user models.User) (models.User, error) {
 	// 5. Vrati originalnu lozinku za forward
 	user.Password = originalPassword
 
-	// 6. Marshal u JSON
+	// --- KREIRANJE FINANSIJSKE KARTICE PRE "7" ---
+	userID := result.InsertedID.(primitive.ObjectID).Hex()
+	fmt.Println("1")
+	karticaBody, err := json.Marshal(map[string]string{
+		"userId":  userID,
+		"ime":     user.Name,
+		"prezime": user.Surname,
+		"index":   "2023/001",
+	})
+	if err != nil {
+		return models.User{}, fmt.Errorf("failed to marshal kartica body: %v", err)
+	}
+	fmt.Println("2")
+	fmt.Println(string(karticaBody))
+
+	// Retry logika za POST
+	var karticaResp *http.Response
+	var karticaErr error
+	for i := 0; i < 5; i++ {
+		fmt.Println("Pokušaj kreiranja finansijske kartice...")
+		karticaResp, karticaErr = http.Post(
+			"http://finansijskakartica-service:8085/kartice",
+			"application/json",
+			bytes.NewBuffer(karticaBody),
+		)
+		if karticaErr == nil {
+			break
+		}
+		fmt.Println("Kartica service not ready, retrying in 1s...", karticaErr)
+		time.Sleep(1 * time.Second)
+	}
+	if karticaErr != nil {
+		return models.User{}, fmt.Errorf("failed to create kartica after retries: %v", karticaErr)
+	}
+
+	defer karticaResp.Body.Close()
+	bodyBytes, _ := io.ReadAll(karticaResp.Body)
+	fmt.Println("Kartica service response status:", karticaResp.Status)
+	fmt.Println("Kartica service response body:", string(bodyBytes))
+	if karticaResp.StatusCode != http.StatusOK && karticaResp.StatusCode != http.StatusCreated {
+		return models.User{}, fmt.Errorf("kartica request failed with status: %s", karticaResp.Status)
+	}
+
+	// 6. Marshal u JSON za domovi-service
 	body, err := json.Marshal(user)
 	if err != nil {
 		return models.User{}, err
 	}
+	fmt.Println("7")
 
-	// 7. Pošalji POST request drugom sistemu
+	// 7. Pošalji POST request domovi-service
 	resp, err := http.Post("http://host.docker.internal/domovi/users/register", "application/json", bytes.NewBuffer(body))
 	if err != nil {
 		return models.User{}, err
 	}
 	defer resp.Body.Close()
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return models.User{}, fmt.Errorf("forward request failed with status: %s", resp.Status)
 	}
+	fmt.Println("8")
 
 	return user, nil
 }

@@ -26,4 +26,17 @@
 <div class="home-container">
   <h1>Dobrodošli</h1>
   <p>Ovo je početna stranica nakon logina.</p>
+
+  <!-- Finansijska kartica -->
+  <div *ngIf="kartica" class="kartica-container">
+    <h2>Vaša finansijska kartica</h2>
+    <p><span class="label">Ime:</span> <span class="value">{{ kartica.ime }} {{ kartica.prezime }}</span></p>
+    <p><span class="label">Index:</span> <span class="value">{{ kartica.index }}</span></p>
+    <p><span class="label">Novac:</span> <span class="value">{{ kartica.novac | currency:'RSD' }}</span></p>
+    <p><span class="label">Doručak:</span> <span class="value">{{ kartica.dorucakCount }}</span></p>
+    <p><span class="label">Ručak:</span> <span class="value">{{ kartica.rucakCount }}</span></p>
+    <p><span class="label">Večera:</span> <span class="value">{{ kartica.veceraCount }}</span></p>
+  </div>
 </div>
+
+
