@@ -32,7 +32,6 @@ services:
       - "81:81"
     depends_on:
       - user-service
-      - jelovnik-service
     networks:
       - app-network
 

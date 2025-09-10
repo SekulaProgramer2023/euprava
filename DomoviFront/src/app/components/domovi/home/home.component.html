@@ -31,6 +31,14 @@
   <p>Status: {{ soba.IsFree ? 'Slobodna' : 'Zauzeta' }}</p>
   <p>Kapacitet: {{ soba.capacity }}</p>
 
+   <!-- Ako je role User i ovo je njegova soba -->
+    <button 
+      *ngIf="role === 'User' && soba.users.includes(userId)" 
+      class="kvar-btn"
+      (click)="openKvarModal(soba.id)">
+      Prijavi kvar
+    </button>
+
   <!-- Prikaz studenata ako je admin -->
 <div *ngIf="role === 'Admin' && soba.users.length > 0" class="students-container">
   <p style="text-align: center;">Studenti u sobi:</p>
@@ -40,6 +48,18 @@
     </span>
   </div>
 </div>
+
+<!-- Prikaz kvarova samo za admina -->
+<div *ngIf="role === 'Admin' && (kvarMap[soba.id]?.length ?? 0) > 0" class="kvar-container">
+  <p>Kvarovi u sobi</p>
+  <ul>
+    <li *ngFor="let kvar of kvarMap[soba.id]">
+      <span>🛠️ {{ kvar.description }}</span>
+      <span class="status">{{ kvar.status ? 'Rešen' : 'Nerešen' }}</span>
+    </li>
+  </ul>
+</div>
+
 
 
   <!-- Dugme samo ako je role == user -->
@@ -61,5 +81,18 @@
     <h2>Greška</h2>
     <p>{{ errorMessage }}</p>
     <button (click)="closeErrorModal()">OK</button>
+  </div>
+</div>
+
+
+<!-- Modal za prijavu kvara -->
+<div class="modal-backdrop" *ngIf="showKvarModal">
+  <div class="modal">
+    <h2>Prijavi kvar</h2>
+    <textarea [(ngModel)]="kvarDescription" placeholder="Unesi opis kvara..." rows="4" style="width:100%;"></textarea>
+    <div class="modal-actions" style="margin-top:10px; display:flex; gap:10px; justify-content:flex-end;">
+      <button (click)="submitKvar()">Pošalji</button>
+      <button (click)="closeKvarModal()">Otkaži</button>
+    </div>
   </div>
 </div>

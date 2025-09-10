@@ -30,6 +30,10 @@ func main() {
 	router.HandleFunc("/kreirajSobu", handlers.CreateSobaHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/useliStudenta", handlers.UseliUseraHandler).Methods("POST", "OPTIONS")
 
+	router.HandleFunc("/kvarovi", handlers.GetAllKvaroviHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/prijavi-kvar", handlers.CreateKvarHandler).Methods("POST", "OPTIONS")
+	router.HandleFunc("/kvarovi/soba/{id}", handlers.GetKvaroviBySobaHandler).Methods("GET", "OPTIONS")
+
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},

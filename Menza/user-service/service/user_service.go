@@ -113,19 +113,6 @@ func RegisterUser(user models.User) (models.User, error) {
 
 	return user, nil
 }
-func GetUserByEmail(email string) (models.User, error) {
-	collection := db.Client.Database("eupravaM").Collection("users")
-
-	var user models.User
-	err := collection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&user)
-	if err == mongo.ErrNoDocuments {
-		return models.User{}, errors.New("user not found")
-	} else if err != nil {
-		return models.User{}, err
-	}
-
-	return user, nil
-}
 
 func LoginUser(user models.User) (string, error) {
 	collection := db.Client.Database("eupravaM").Collection("users")
@@ -190,4 +177,18 @@ func UpdateOmiljenaJela(userID string, jela []string) error {
 
 	_, err = collection.UpdateByID(context.TODO(), objID, update)
 	return err
+}
+
+func GetUserByEmail(email string) (models.User, error) {
+	collection := db.Client.Database("eupravaM").Collection("users")
+
+	var user models.User
+	err := collection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&user)
+	if err == mongo.ErrNoDocuments {
+		return models.User{}, errors.New("user not found")
+	} else if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
 }

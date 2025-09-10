@@ -24,6 +24,8 @@ func main() {
 	}
 	defer db.DisconnectMongo()
 	bootstrap.ClearJelovnici()
+	bootstrap.ClearJela()
+	bootstrap.InsertInitialJela()
 
 	// Kreiranje routera
 	router := mux.NewRouter()

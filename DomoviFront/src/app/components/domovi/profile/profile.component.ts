@@ -26,29 +26,27 @@ export class ProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  const userId = this.userService.getUserIdFromToken();
-  if (userId) {
-    this.userService.getUserById(userId).subscribe({
+  const email = this.userService.getEmailFromToken();
+  if (email) {
+    this.userService.getUserByEmail(email).subscribe({
       next: (res) => {
         this.user = res;
-        console.log("User data:", this.user); // debug
+        console.log("User data:", this.user);
 
         if (this.user?.soba) {
-  this.roomService.getSobaById(this.user!.soba!).subscribe({
-  next: (soba: Soba) => {
-    console.log('Dohvaćena soba:', soba);
-    this.roomNumber = soba.roomNumber; // uzmi roomNumber
-  },
-  error: (err) => {
-    console.error("Greška pri dohvatanju sobe", err);
-    this.roomNumber = 'Nije useljen';
-  }
-});
-
-} else {
-  this.roomNumber = 'Nije useljen';
-}
-
+          this.roomService.getSobaById(this.user!.soba!).subscribe({
+            next: (soba: Soba) => {
+              console.log('Dohvaćena soba:', soba);
+              this.roomNumber = soba.roomNumber;
+            },
+            error: (err) => {
+              console.error("Greška pri dohvatanju sobe", err);
+              this.roomNumber = 'Nije useljen';
+            }
+          });
+        } else {
+          this.roomNumber = 'Nije useljen';
+        }
       },
       error: (err) => console.error('Greška pri dohvatanju korisnika', err)
     });

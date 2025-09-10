@@ -32,9 +32,9 @@ export class ProfileComponent2 implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const userId = this.userService.getUserIdFromToken();
-    if (userId) {
-      this.userService.getUserById(userId).subscribe({
+    const email = this.userService.getEmailFromToken();
+    if (email) {
+      this.userService.getUserByEmail(email).subscribe({
         next: (res) => {
           this.user = new User(
             res.id || '',

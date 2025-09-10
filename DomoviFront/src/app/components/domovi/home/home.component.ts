@@ -4,11 +4,14 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../../services/user.service'
 import { User } from '../../../model/user.model';
+import { KvarService } from '../../../services/kvar.service';
+import { FormsModule } from '@angular/forms';
+import { Kvar } from '../../../model/kvar.model';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
@@ -18,11 +21,17 @@ export class HomeComponent implements OnInit {
   role: string = '';
   userId: string = '';
   dropdownOpen: boolean = false;
+  showKvarModal: boolean = false;
+  kvarDescription: string = '';
+  selectedSobaId: string | null = null;
+  kvarMap: Record<string, Kvar[]> = {};
+
+
 
   showErrorModal: boolean = false;   // kontrola modala
   errorMessage: string = '';         // tekst greške
 
-  constructor(private roomService: RoomService, private router: Router, private userService: UserService) {}
+  constructor(private roomService: RoomService, private router: Router, private userService: UserService, private kvarService: KvarService) {}
 
   ngOnInit(): void {
   const token = localStorage.getItem('token');
@@ -33,31 +42,47 @@ export class HomeComponent implements OnInit {
   }
 
   this.roomService.getSobe().subscribe({
-    next: async (data) => {
-      this.sobe = data;
+  next: async (data) => {
+    this.sobe = data;
 
-      if (this.role === 'Admin') {
-        // Za svaku sobu, dohvati sve korisnike
-        const allUserIds = this.sobe.flatMap(soba => soba.users);
-        const uniqueUserIds = Array.from(new Set(allUserIds));
+    // Inicijalizacija kvarMap za sve sobe
+    this.sobe.forEach(soba => {
+      this.kvarMap[soba.id] = [];
+    });
 
-        for (const id of uniqueUserIds) {
-  await this.userService.getUserById(id).toPromise()
-    .then(user => {
-      if (user) {   // dodaj proveru
-        this.userMap[id] = { 
-          name: user?.name ?? 'Nepoznato', 
-          surname: user?.surname ?? '' 
-        };
+    // Ako je admin, dohvati korisnike
+    if (this.role === 'Admin') {
+      const allUserIds = this.sobe.flatMap(soba => soba.users);
+      const uniqueUserIds = Array.from(new Set(allUserIds));
+
+      for (const id of uniqueUserIds) {
+        await this.userService.getUserById(id).toPromise()
+          .then(user => {
+            if (user) {
+              this.userMap[id] = { 
+                name: user?.name ?? 'Nepoznato', 
+                surname: user?.surname ?? '' 
+              };
+            }
+          })
+          .catch(err => console.error(err));
       }
-    })
-    .catch(err => console.error(err));
-}
 
+      // Dohvati kvarove po sobi
+      for (const soba of this.sobe) {
+        this.kvarService.getKvaroviBySoba(soba.id).subscribe({
+          next: (kvarovi) => {
+            this.kvarMap[soba.id] = kvarovi;
+          },
+          error: (err) => console.error('Greška pri dohvatanju kvarova', err)
+        });
       }
-    },
-    error: (err) => this.showError("Greška pri učitavanju soba")
-  });
+    }
+  },
+  error: (err) => this.showError("Greška pri učitavanju soba")
+});
+
+
 }
 
 
@@ -105,4 +130,34 @@ export class HomeComponent implements OnInit {
     event.stopPropagation();
     this.router.navigate(['/domovi/profile']);
   }
+
+  // Otvaranje modala
+  openKvarModal(sobaId: string) {
+    this.selectedSobaId = sobaId;
+    this.showKvarModal = true;
+  }
+
+  // Zatvaranje modala
+  closeKvarModal() {
+    this.showKvarModal = false;
+    this.kvarDescription = '';
+    this.selectedSobaId = null;
+  }
+
+  // Slanje prijave
+  submitKvar() {
+    if (!this.kvarDescription.trim() || !this.selectedSobaId) return;
+
+    this.kvarService.createKvar(this.userId, this.selectedSobaId, this.kvarDescription).subscribe({
+      next: () => {
+        alert("Kvar uspešno prijavljen!");
+        this.closeKvarModal();
+      },
+      error: (err) => {
+        console.error("Greška pri prijavi kvara", err);
+        alert("Došlo je do greške pri prijavi kvara.");
+      }
+    });
+  }
 }
+

@@ -28,6 +28,7 @@ func main() {
 	router.HandleFunc("/users/{id}", handlers.GetUserByIDHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/users", handlers.GetUsers).Methods("GET", "OPTIONS")
 	router.HandleFunc("/register", handlers.RegisterUserHandler).Methods("POST", "OPTIONS")
+	router.HandleFunc("/by-email", handlers.GetUserByEmailHandler).Methods("POST", "OPTIONS")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"},

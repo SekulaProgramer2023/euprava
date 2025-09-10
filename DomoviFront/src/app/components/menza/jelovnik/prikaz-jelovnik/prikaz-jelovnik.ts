@@ -35,5 +35,6 @@ export class PrikazJelovnik implements OnInit {
     });
 
     this.isAdmin = this.authService.isAdmin();
+    console.log(this.isAdmin)
   }
 }

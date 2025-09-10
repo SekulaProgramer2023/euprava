@@ -50,4 +50,20 @@ getUserIdFromToken(): string | null {
   }
 }
 
+getEmailFromToken(): string | null {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.email || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  getUserByEmail(email: string): Observable<User> {
+    return this.http.post<User>(`${this.baseUrl}/by-email`, { email });
+  }
+
 }

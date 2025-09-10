@@ -77,3 +77,30 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		"token": token,
 	})
 }
+
+func GetUserByEmailHandler(w http.ResponseWriter, r *http.Request) {
+	// parsiraj body
+	var request struct {
+		Email string `json:"email"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if request.Email == "" {
+		http.Error(w, "email is required", http.StatusBadRequest)
+		return
+	}
+
+	// pozovi servis
+	user, err := service.GetUserByEmail(request.Email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	// pošalji JSON odgovor
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
+}

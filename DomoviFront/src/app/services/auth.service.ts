@@ -20,6 +20,6 @@ export class AuthService {
 }
 
 isAdmin(): boolean {
-  return this.getUserRoleFromToken() === 'admin';
+  return this.getUserRoleFromToken() === 'Admin';
 }
 }

@@ -136,3 +136,17 @@ func LoginUser(user models.User) (string, error) {
 
 	return tokenString, nil
 }
+
+func GetUserByEmail(email string) (models.User, error) {
+	collection := db.Client.Database("euprava").Collection("users")
+
+	var user models.User
+	err := collection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&user)
+	if err == mongo.ErrNoDocuments {
+		return models.User{}, errors.New("user not found")
+	} else if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
