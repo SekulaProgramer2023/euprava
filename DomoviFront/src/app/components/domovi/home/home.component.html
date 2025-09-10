@@ -89,7 +89,7 @@
 <div class="modal-backdrop" *ngIf="showKvarModal">
   <div class="modal">
     <h2>Prijavi kvar</h2>
-    <textarea [(ngModel)]="kvarDescription" placeholder="Unesi opis kvara..." rows="4" style="width:100%;"></textarea>
+    <textarea [(ngModel)]="kvarDescription" placeholder="Unesi opis kvara..." rows="15" style="width:100%;"></textarea>
     <div class="modal-actions" style="margin-top:10px; display:flex; gap:10px; justify-content:flex-end;">
       <button (click)="submitKvar()">Pošalji</button>
       <button (click)="closeKvarModal()">Otkaži</button>
