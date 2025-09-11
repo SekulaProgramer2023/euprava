@@ -7,4 +7,5 @@ export interface JelovnikPrikaz {
   rucak?: Jelo[];
   vecera?: Jelo[];
   opis?: string;
+  
 }

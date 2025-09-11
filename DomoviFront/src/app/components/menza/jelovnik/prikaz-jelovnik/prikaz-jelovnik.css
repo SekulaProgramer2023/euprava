@@ -85,3 +85,23 @@
   text-align: center; /* centriranje dugmeta iznad liste jelovnika */
   margin-bottom: 20px;
 }
+/* Dugmad za iskorišćavanje obroka */
+.jelovnik-column button {
+  display: inline-block;
+  margin-top: 5px;
+  padding: 6px 12px;
+  background-color: #42a5f5; /* svetloplava */
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.jelovnik-column button:hover {
+  background-color: #1e88e5; /* tamnija plava pri hover-u */
+  transform: translateY(-1px);
+}

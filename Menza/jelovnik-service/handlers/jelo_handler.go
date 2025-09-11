@@ -1,7 +1,12 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"jelovnik-service/db"
 	"jelovnik-service/models"
 	"jelovnik-service/service"
 	"net/http"
@@ -55,4 +60,25 @@ func GetJelaByTipHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(jela)
+}
+func GetJeloByIDHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jeloID := vars["id"]
+
+	oid, err := primitive.ObjectIDFromHex(jeloID)
+	if err != nil {
+		http.Error(w, "Invalid jelo ID", http.StatusBadRequest)
+		return
+	}
+
+	collection := db.Client.Database("eupravaM").Collection("jela")
+	var jelo models.Jelo
+	err = collection.FindOne(context.TODO(), bson.M{"_id": oid}).Decode(&jelo)
+	if err != nil {
+		http.Error(w, "Jelo not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(jelo)
 }

@@ -26,7 +26,7 @@ func main() {
 	bootstrap.ClearJelovnici()
 	bootstrap.ClearJela()
 	bootstrap.InsertInitialJela()
-
+	bootstrap.InsertInitialJelovnici()
 	// Kreiranje routera
 	router := mux.NewRouter()
 
@@ -34,7 +34,7 @@ func main() {
 	router.HandleFunc("/jela", handlers.GetJela).Methods("GET", "OPTIONS")
 	router.HandleFunc("/jela", handlers.CreateJelo).Methods("POST", "OPTIONS")
 	router.HandleFunc("/jela/tip", handlers.GetJelaByTipHandler).Methods("GET", "OPTIONS")
-
+	router.HandleFunc("/jela/{id}", handlers.GetJeloByIDHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/jelovnik", handlers.CreateJelovnikHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/jelovnik", handlers.GetJelovnikeHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/jelovnici-sa-jelima", handlers.GetJelovniciSaJelimaHandler).Methods("GET", "OPTIONS")

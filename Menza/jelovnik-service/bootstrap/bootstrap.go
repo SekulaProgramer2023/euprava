@@ -8,8 +8,75 @@ import (
 	"jelovnik-service/db"
 	"jelovnik-service/models"
 	"os"
+	"time"
 )
 
+func InsertInitialJelovnici() {
+	collection := db.Client.Database("eupravaM").Collection("jelovnici")
+	jelaCollection := db.Client.Database("eupravaM").Collection("jela")
+
+	// Proveri da li već postoje jelovnici
+	count, err := collection.CountDocuments(context.TODO(), bson.D{})
+	if err != nil {
+		fmt.Println("Error counting jelovnici:", err)
+		return
+	}
+	if count > 0 {
+		return
+	}
+
+	// Dohvati sve jela
+	cursor, err := jelaCollection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		fmt.Println("Error fetching jela:", err)
+		return
+	}
+	var jela []models.Jelo
+	if err := cursor.All(context.TODO(), &jela); err != nil {
+		fmt.Println("Error decoding jela:", err)
+		return
+	}
+
+	// Podeli jela po tipu obroka
+	var dorucakIDs, rucakIDs, veceraIDs []primitive.ObjectID
+	for _, j := range jela {
+		switch j.TipObroka {
+		case models.Dorucak:
+			dorucakIDs = append(dorucakIDs, j.JeloID)
+		case models.Rucak:
+			rucakIDs = append(rucakIDs, j.JeloID)
+		case models.Vecera:
+			veceraIDs = append(veceraIDs, j.JeloID)
+		}
+	}
+
+	// Kreiraj nekoliko jelovnika
+	jelovnici := []interface{}{
+		models.Jelovnik{
+			JelovnikID: primitive.NewObjectID(),
+			Datum:      time.Now(),
+			Dorucak:    dorucakIDs,
+			Rucak:      rucakIDs,
+			Vecera:     veceraIDs,
+			Opis:       "Prvi jelovnik",
+		},
+		models.Jelovnik{
+			JelovnikID: primitive.NewObjectID(),
+			Datum:      time.Now().AddDate(0, 0, 7), // sledeća nedelja
+			Dorucak:    dorucakIDs,
+			Rucak:      rucakIDs,
+			Vecera:     veceraIDs,
+			Opis:       "Drugi jelovnik",
+		},
+	}
+
+	_, err = collection.InsertMany(context.TODO(), jelovnici)
+	if err != nil {
+		fmt.Println("Error inserting initial jelovnici:", err)
+	} else {
+		fmt.Println("Inserted initial jelovnici into database")
+	}
+}
 func InsertInitialJela() {
 	if os.Getenv("ENABLE_BOOTSTRAP") != "true" {
 		return

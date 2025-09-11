@@ -1,4 +1,9 @@
-// c:/Users/nknik/OneDrive/Desktop/euprava2/DomoviFront/src/app/model/FinansijskaKartica.ts
+export interface IskoriscenoJelo {
+  jeloId: string;
+  naziv: string;
+  tipObroka: 'dorucak' | 'rucak' | 'vecera';
+  datum: string; // ISO string iz backend-a
+}
 
 export interface FinansijskaKartica {
   id: string;
@@ -10,4 +15,5 @@ export interface FinansijskaKartica {
   dorucakCount: number;
   rucakCount: number;
   veceraCount: number;
+  iskoriscenaJela: IskoriscenoJelo[]; // novo polje
 }

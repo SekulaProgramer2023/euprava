@@ -26,10 +26,11 @@
 <div class="home-container">
   <h1>Dobrodošli</h1>
   <p>Ovo je početna stranica nakon logina.</p>
-
-  <!-- Finansijska kartica -->
-  <div *ngIf="kartica" class="kartica-container">
-    <h2>Vaša finansijska kartica</h2>
+<!-- Finansijska kartica -->
+<div *ngIf="kartica" class="kartica-container">
+  <h2>Vaša finansijska kartica</h2>
+  
+  <div class="kartica-info">
     <p><span class="label">Ime:</span> <span class="value">{{ kartica.ime }} {{ kartica.prezime }}</span></p>
     <p><span class="label">Index:</span> <span class="value">{{ kartica.index }}</span></p>
     <p><span class="label">Novac:</span> <span class="value">{{ kartica.novac | currency:'RSD' }}</span></p>
@@ -37,6 +38,62 @@
     <p><span class="label">Ručak:</span> <span class="value">{{ kartica.rucakCount }}</span></p>
     <p><span class="label">Večera:</span> <span class="value">{{ kartica.veceraCount }}</span></p>
   </div>
+
+  <!-- Cenovnik obroka -->
+  <div class="cenovnik-container">
+    <h3>Cenovnik obroka</h3>
+    <ul>
+      <li>Doručak: 70 RSD</li>
+      <li>Ručak: 120 RSD</li>
+      <li>Večera: 90 RSD</li>
+    </ul>
+  </div>
+
+  <!-- Akcije: depozit i kupovina obroka -->
+  <div class="actions-container">
+    <!-- Depozit -->
+    <div class="action">
+      <input type="number" [(ngModel)]="depositAmount" placeholder="Iznos za uplatu" min="1">
+      <button (click)="deposit()">Uplati</button>
+    </div>
+
+    <!-- Doručak -->
+    <div class="action">
+      <input type="number" [(ngModel)]="dorucakCount" placeholder="Broj doručaka" min="1" [value]="1">
+      <button (click)="buyDorucak()">Kupi doručak</button>
+    </div>
+
+    <!-- Ručak -->
+    <div class="action">
+      <input type="number" [(ngModel)]="rucakCount" placeholder="Broj ručkova" min="1" [value]="1">
+      <button (click)="buyRucak()">Kupi ručak</button>
+    </div>
+
+    <!-- Večera -->
+    <div class="action">
+      <input type="number" [(ngModel)]="veceraCount" placeholder="Broj večera" min="1" [value]="1">
+      <button (click)="buyVecera()">Kupi večeru</button>
+    </div>
+    <div class="action">
+  <button (click)="showHistoryModal = true">Prikaži istoriju</button>
 </div>
 
+  </div>
+  <div class="modal" *ngIf="showHistoryModal">
+  <div class="modal-content">
+    <span class="close" (click)="showHistoryModal = false">&times;</span>
+    <h3>Istorija iskorišćenih obroka</h3>
+    <div *ngIf="kartica?.iskoriscenaJela && kartica.iskoriscenaJela.length > 0; else emptyHistory">
+  <ul>
+    <li *ngFor="let jelo of kartica.iskoriscenaJela">
+      {{ jelo.datum | date:'dd.MM.yyyy' }} - {{ jelo.tipObroka | titlecase }}: {{ jelo.naziv }}
+    </li>
+  </ul>
+</div>
+<ng-template #emptyHistory>
+  <p>Nema iskorišćenih obroka.</p>
+</ng-template>
 
+</div>
+
+</div>

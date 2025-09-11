@@ -1,35 +1,55 @@
 <div class="jelovnici-container">
   <h2>Lista jelovnika</h2>
-  <div class="create-button-container">
-  <button [routerLink]="['/menza/jelovnik/kreiranje-jelovnika']" *ngIf="isAdmin">Dodaj  jelovnik</button>
-</div>
+
+  <!-- Dugme za kreiranje jelovnika samo za admina -->
+  <div class="create-button-container" *ngIf="isAdmin">
+    <button [routerLink]="['/menza/jelovnik/kreiranje-jelovnika']">Dodaj jelovnik</button>
+  </div>
+
+  <!-- Loading indikator -->
   <div *ngIf="loading">Učitavanje jelovnika...</div>
 
+  <!-- Poruka ako nema jelovnika -->
   <div *ngIf="!loading && jelovnici.length === 0">
     Nema dostupnih jelovnika.
   </div>
 
+  <!-- Lista jelovnika -->
   <div *ngFor="let jelovnik of jelovnici" class="jelovnik-card">
     <h3>{{ jelovnik.datum | date:'dd.MM.yyyy' }}</h3>
     <p *ngIf="jelovnik.opis"><strong>Opis:</strong> {{ jelovnik.opis }}</p>
 
     <div class="jelovnik-grid">
+      <!-- Doručak -->
       <div class="jelovnik-column">
         <h4>Doručak</h4>
         <ul>
-          <li *ngFor="let jelo of jelovnik.dorucak">{{ jelo.naziv }} ({{ jelo.kategorija }})</li>
+          <li *ngFor="let jelo of jelovnik.dorucak">
+            {{ jelo.naziv }} ({{ jelo.kategorija }})
+            <button (click)="iskoristiObrok(jelovnik.jelovnikId!, jelo.jeloId!)">Iskoristi</button>
+          </li>
         </ul>
       </div>
+
+      <!-- Ručak -->
       <div class="jelovnik-column">
         <h4>Ručak</h4>
         <ul>
-          <li *ngFor="let jelo of jelovnik.rucak">{{ jelo.naziv }} ({{ jelo.kategorija }})</li>
+          <li *ngFor="let jelo of jelovnik.rucak">
+            {{ jelo.naziv }} ({{ jelo.kategorija }})
+            <button (click)="iskoristiObrok(jelovnik.jelovnikId!, jelo.jeloId!)">Iskoristi</button>
+          </li>
         </ul>
       </div>
+
+      <!-- Večera -->
       <div class="jelovnik-column">
         <h4>Večera</h4>
         <ul>
-          <li *ngFor="let jelo of jelovnik.vecera">{{ jelo.naziv }} ({{ jelo.kategorija }})</li>
+          <li *ngFor="let jelo of jelovnik.vecera">
+            {{ jelo.naziv }} ({{ jelo.kategorija }})
+            <button (click)="iskoristiObrok(jelovnik.jelovnikId!, jelo.jeloId!)">Iskoristi</button>
+          </li>
         </ul>
       </div>
     </div>

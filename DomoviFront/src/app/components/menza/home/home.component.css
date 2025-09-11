@@ -168,3 +168,119 @@ body {
     font-size: 14px;
   }
 }
+/* Akcioni delovi (depozit, dorucak, rucak, vecera) */
+.kartica-container .action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.kartica-container .action input[type="number"] {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 2px solid #1976d2;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.kartica-container .action input[type="number"]:focus {
+  border-color: #0d47a1;
+  box-shadow: 0 0 5px rgba(21, 101, 192, 0.5);
+}
+
+.kartica-container .action button {
+  padding: 10px 20px;
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.kartica-container .action button:hover {
+  background-color: #0d47a1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.kartica-container .action button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Responsive za akcione delove */
+@media (max-width: 480px) {
+  .kartica-container .action {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .kartica-container .action button {
+    width: 100%;
+  }
+
+  .kartica-container .action input[type="number"] {
+    width: 100%;
+  }
+}
+/* Cenovnik unutar kartice */
+.cenovnik-container {
+  background-color: #bbdefb;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin: 15px 0;
+  text-align: left;
+  font-weight: bold;
+  color: #0d47a1;
+}
+
+.cenovnik-container h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.cenovnik-container ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.cenovnik-container ul li {
+  margin: 4px 0;
+  font-size: 16px;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
