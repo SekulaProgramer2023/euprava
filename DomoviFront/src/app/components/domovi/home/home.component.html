@@ -53,12 +53,39 @@
 <div *ngIf="role === 'Admin' && (kvarMap[soba.id]?.length ?? 0) > 0" class="kvar-container">
   <p>Kvarovi u sobi</p>
   <ul>
-    <li *ngFor="let kvar of kvarMap[soba.id]">
-      <span>🛠️ {{ kvar.description }}</span>
-      <span class="status">{{ kvar.status ? 'Rešen' : 'Nerešen' }}</span>
-    </li>
+    <li *ngFor="let kvar of kvarMap[soba.id]; let i = index">
+  <span class="kvar-link" (click)="openKvarDetailModal(kvar)">
+    🛠️ Kvar {{ i + 1 }}
+  </span>
+</li>
+
   </ul>
 </div>
+
+<!-- Modal za detalje kvara -->
+<div class="modal-backdrop" *ngIf="showKvarDetailModal">
+  <div style="color: black" class="modal">
+    <h2>Detalji kvara</h2>
+
+    <!-- Provera da selectedKvar postoji -->
+    <div *ngIf="selectedKvar">
+      <p><strong>Kvar ID:</strong> {{ selectedKvar.id }}</p>
+      <p><strong>Opis:</strong> {{ selectedKvar.description }}</p>
+      <p><strong>Status:</strong> {{ selectedKvar.status ? 'Rešen ✅' : 'Nerešen ❌' }}</p>
+    </div>
+
+    <div class="modal-actions" style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end;">
+      <button 
+        *ngIf="selectedKvar && !selectedKvar.status" 
+        (click)="resolveSelectedKvar()">
+        Označi kao rešen
+      </button>
+      <button (click)="closeKvarDetailModal()">Zatvori</button>
+    </div>
+  </div>
+</div>
+
+
 
 
 

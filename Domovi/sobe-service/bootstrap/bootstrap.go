@@ -95,3 +95,14 @@ func ClearUsers() {
 		fmt.Println("Cleared users from database")
 	}
 }
+
+func ClearKvar() {
+
+	collection := db.Client.Database("euprava").Collection("kvarovi")
+	_, err := collection.DeleteMany(context.TODO(), bson.D{})
+	if err != nil {
+		fmt.Println("Error clearing kvarovi:", err)
+	} else {
+		fmt.Println("Cleared kvarovi from database")
+	}
+}

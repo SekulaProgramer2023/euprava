@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sobe-service/models"
 	"sobe-service/service"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -54,4 +55,25 @@ func GetKvaroviBySobaHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(kvarovi)
+}
+
+func ResolveKvarHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	kvarID := strings.TrimSpace(vars["id"])
+
+	if kvarID == "" {
+		http.Error(w, `{"error": "Nedostaje ID kvara"}`, http.StatusBadRequest)
+		return
+	}
+
+	err := services.ResolveKvar(kvarID)
+	if err != nil {
+		http.Error(w, `{"error": "`+err.Error()+`"}`, http.StatusBadRequest)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Kvar uspešno označen kao rešen",
+	})
 }

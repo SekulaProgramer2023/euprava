@@ -27,4 +27,9 @@ export class KvarService {
   getKvaroviBySoba(sobaId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/kvarovi/soba/${sobaId}`);
   }
+
+  resolveKvar(kvarId: string) {
+  return this.http.put(`${this.apiUrl}/kvarovi/${kvarId}/resolve`, {}); 
+}
+
 }

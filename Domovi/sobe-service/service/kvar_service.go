@@ -115,3 +115,27 @@ func GetKvaroviBySobaID(sobaID string) ([]models.Kvar, error) {
 
 	return kvarovi, nil
 }
+
+func ResolveKvar(kvarID string) error {
+	collection := db.Client.Database("euprava").Collection("kvarovi")
+
+	// Validacija ID-a
+	objID, err := primitive.ObjectIDFromHex(kvarID)
+	if err != nil {
+		return fmt.Errorf("nevalidan kvarID: %w", err)
+	}
+
+	// Update dokumenta
+	update := bson.M{"$set": bson.M{"status": true}}
+
+	result, err := collection.UpdateOne(context.TODO(), bson.M{"_id": objID}, update)
+	if err != nil {
+		return fmt.Errorf("greška pri ažuriranju kvara: %w", err)
+	}
+
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("kvar sa ID %s nije pronađen", kvarID)
+	}
+
+	return nil
+}

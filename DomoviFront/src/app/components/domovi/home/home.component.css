@@ -316,3 +316,56 @@ ease;
   font-weight: bold;
   color: white;
 }
+
+/* Dugme za rešavanje kvara (admin) */
+.resolve-btn {
+  background-color: #4caf50; /* zelena */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 10px;
+}
+
+.resolve-btn:hover {
+  background-color: #388e3c; /* tamnija zelena */
+  transform: scale(1.05);
+}
+
+.resolve-btn:active {
+  transform: scale(0.95);
+}
+
+.kvar-container li {
+  background-color: #1976d2;
+  padding: 8px 10px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  border: 1px solid #ffe0b2;
+  cursor: pointer;   /* klikabilno */
+  transition: background-color 0.2s;
+}
+
+.kvar-container li:hover {
+  background-color: #1565c0;
+}
+
+.kvar-link {
+  cursor: pointer;
+  color: #ffeb3b;
+  font-weight: bold;
+}
+
+.kvar-link:hover {
+  text-decoration: underline;
+}
+
+

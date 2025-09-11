@@ -65,6 +65,6 @@ export class LoginComponent2 {
 
 
   navigateToRegister() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/menza/register']);
   }
 }

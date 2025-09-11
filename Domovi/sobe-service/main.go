@@ -21,6 +21,7 @@ func main() {
 	}
 	defer db.DisconnectMongo()
 	bootstrap.ClearUsers()
+	bootstrap.ClearKvar()
 	bootstrap.InsertInitialSobe()
 
 	router := mux.NewRouter()
@@ -33,6 +34,7 @@ func main() {
 	router.HandleFunc("/kvarovi", handlers.GetAllKvaroviHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/prijavi-kvar", handlers.CreateKvarHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/kvarovi/soba/{id}", handlers.GetKvaroviBySobaHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/kvarovi/{id}/resolve", handlers.ResolveKvarHandler).Methods("PUT", "OPTIONS")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"},

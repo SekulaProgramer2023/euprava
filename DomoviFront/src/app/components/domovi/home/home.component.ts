@@ -25,6 +25,8 @@ export class HomeComponent implements OnInit {
   kvarDescription: string = '';
   selectedSobaId: string | null = null;
   kvarMap: Record<string, Kvar[]> = {};
+  selectedKvar: Kvar | null = null;
+  showKvarDetailModal: boolean = false;
 
 
 
@@ -159,5 +161,40 @@ export class HomeComponent implements OnInit {
       }
     });
   }
+
+  resolveKvar(sobaId: string, kvarId: string) {
+  this.kvarService.resolveKvar(kvarId).subscribe({
+    next: () => {
+      // Ažuriraj status u lokalnom kvarMap da ne mora reload
+      const kvarovi = this.kvarMap[sobaId];
+      const target = kvarovi.find(k => k.id === kvarId);
+      if (target) target.status = true;
+
+      alert("Kvar označen kao rešen ✅");
+    },
+    error: (err) => {
+      console.error("Greška pri označavanju kvara", err);
+      alert("Došlo je do greške.");
+    }
+  });
+}
+
+openKvarDetailModal(kvar: Kvar) {
+  this.selectedKvar = kvar;
+  this.showKvarDetailModal = true;
+}
+
+closeKvarDetailModal() {
+  this.selectedKvar = null;
+  this.showKvarDetailModal = false;
+}
+
+resolveSelectedKvar() {
+  if (this.selectedKvar) {
+    this.resolveKvar(this.selectedKvar.sobaId, this.selectedKvar.id);
+    this.closeKvarDetailModal();
+  }
+}
+
 }
 
