@@ -26,6 +26,17 @@ services:
     networks:
       - app-network
 
+  dogadjaj-service:
+    build: ./dogadjaj-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/euprava
+      - ENABLE_BOOTSTRAP=true
+    networks:
+      - app-network
 
   nginx:
     image: nginx:latest

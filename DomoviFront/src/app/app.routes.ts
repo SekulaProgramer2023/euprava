@@ -3,6 +3,7 @@ import { LoginComponent } from './components/domovi/login/login.component';
 import { RegisterComponent } from './components/domovi/register/register.component';
 import { HomeComponent } from './components/domovi/home/home.component'
 import { ProfileComponent } from './components/domovi/profile/profile.component';
+import { DogadjajComponent } from './components/domovi/dogadjaj/dogadjaj.component';
 
 import { LoginComponent2 } from './components/menza/login/login.component';
 import { RegisterComponent2 } from './components/menza/register/register.component';
@@ -19,6 +20,8 @@ export const routes: Routes = [
   { path: 'domovi/register', component: RegisterComponent },
   { path: 'domovi/home', component: HomeComponent },
   { path: 'domovi/profile', component: ProfileComponent },
+  { path: 'domovi/dogadjaj', component: DogadjajComponent },
+
 
   { path: 'menza/jelovnik/jela', component: PrikazJela },
   { path: 'menza/jelovnik/kreiranje-jela', component: KreiranjeJela },

@@ -1,0 +1,66 @@
+<nav class="navbar">
+  <div class="navbar-left">
+    <img src="https://www.scns.rs/wp-content/uploads/2024/03/SC-Novi-Sad-logo-horizontalni.png" alt="Logo" class="logo">
+    <a [routerLink]="['/menza/home']" class="nav-link">Stranica Menza</a>
+    <a [routerLink]="['/domovi/home']" class="nav-link">Početna</a>
+  </div>
+
+  <div class="navbar-center">
+    <span class="navbar-title">Događaji</span>
+  </div>
+
+  <div class="navbar-right">
+    <div class="profile-container" (click)="toggleDropdown()">
+      <img src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg" alt="Profil" class="profile-pic">
+
+      <div class="dropdown-menu" *ngIf="dropdownOpen">
+        <button (click)="goToProfile($event)">Profil</button>
+        <button (click)="logout($event)">Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="dogadjaji-container">
+  <h1>Lista događaja</h1>
+
+  <button class="create-btn" (click)="openModal()">➕ Kreiraj događaj</button>
+
+  <div *ngIf="loading">⏳ Učitavanje...</div>
+  <div *ngIf="error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error">
+    <div *ngFor="let d of dogadjaji" class="dogadjaj-card">
+      <h2>{{ d.naziv }}</h2>
+      <p><strong>Opis:</strong> {{ d.opis }}</p>
+      <p><strong>Tema hrane:</strong> {{ d.tema }}</p>
+      <p><strong>Datum održavanja:</strong> {{ d.datum_odrzavanja | date:'dd.MM.yyyy HH:mm' }}</p>
+      <p><strong>Status:</strong> {{ d.status }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" *ngIf="showModal">
+  <div class="modal">
+    <h2>Kreiraj novi događaj</h2>
+    <form (ngSubmit)="submitDogadjaj()">
+      <label>Naziv:</label>
+      <input [(ngModel)]="newDogadjaj.naziv" name="naziv" required />
+
+      <label>Opis:</label>
+      <textarea [(ngModel)]="newDogadjaj.opis" name="opis" required></textarea>
+
+      <label>Tema hrane:</label>
+      <input [(ngModel)]="newDogadjaj.tema" name="tema" required>
+
+      <label>Datum održavanja:</label>
+      <input type="datetime-local" [(ngModel)]="newDogadjaj.datum_odrzavanja" name="datum_odrzavanja" required />
+
+      <div class="modal-actions">
+        <button type="submit">Sačuvaj</button>
+        <button type="button" (click)="closeModal()">Otkaži</button>
+      </div>
+    </form>
+  </div>
+</div>
