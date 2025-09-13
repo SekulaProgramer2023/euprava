@@ -140,3 +140,29 @@ func GetUserByEmailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 }
+
+type StatusRequest struct {
+	Status string `json:"status"`
+}
+
+// PUT /users/dogadjaji/{id}/status
+func UpdateDogadjajStatusHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	dogadjajID := vars["id"]
+
+	var req StatusRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "neispravan JSON", http.StatusBadRequest)
+		return
+	}
+
+	if err := service.SetDogadjajStatus(dogadjajID, req.Status); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "status uspešno prosleđen dogadjaj-service",
+	})
+}

@@ -67,6 +67,27 @@
   </div>
 </div>
 
+<<div class="dogadjaji-section" *ngIf="dogadjaji.length > 0">
+  <h3>Događaji na čekanju</h3>
+  <ul>
+    <li *ngFor="let d of dogadjaji">
+      <div>
+        <strong>{{ d.naziv }}</strong> - {{ d.opis }} - <b>{{d.tema}}</b>
+      </div>
+      <div>
+        <button (click)="updateStatus(d.id, 'prihvaćen')">Prihvati</button>
+        <button (click)="updateStatus(d.id, 'odbijen')">Odbij</button>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<div *ngIf="dogadjaji.length === 0" class="no-events">
+  <p>Nema događaja na čekanju.</p>
+</div>
+
+
+
 <ng-template #noUser>
   <p>Korisnik nije učitan.</p>
 </ng-template>

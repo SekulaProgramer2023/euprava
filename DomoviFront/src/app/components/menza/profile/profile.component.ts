@@ -6,6 +6,7 @@ import { UserService } from '../../../services/user.service2';
 import { JeloService } from '../../../services/jela.service';
 import { User } from '../../../model/User';
 import { Jelo } from '../../../model/Jelo';
+import { Dogadjaj } from '../../../model/dogadjaj.model';
 
 @Component({
   selector: 'app-profile',
@@ -17,6 +18,8 @@ import { Jelo } from '../../../model/Jelo';
 export class ProfileComponent2 implements OnInit {
   dropdownOpen: boolean = false;
   user: User | null = null;
+
+  dogadjaji: Dogadjaj[] = [];
 
   // inputi za forme
   newAlergija: string = '';
@@ -50,6 +53,8 @@ export class ProfileComponent2 implements OnInit {
         },
         error: (err) => console.error('Greška pri dohvatanju korisnika', err)
       });
+
+      this.loadDogadjaji();
     }
 
     // Dohvati sva jela za dropdown
@@ -110,6 +115,23 @@ export class ProfileComponent2 implements OnInit {
         window.location.reload(); // očisti dropdown izbor
       },
       error: (err) => console.error('Greška pri dodavanju omiljenog jela', err)
+    });
+  }
+  loadDogadjaji() {
+    this.userService.getDogadjaji().subscribe({
+      next: (res) => {
+        this.dogadjaji = res.filter(d => d.status === 'na čekanju');
+      },
+      error: (err) => console.error('Greška pri dohvatanju događaja', err)
+    });
+  }
+
+  updateStatus(id: string, status: string) {
+    this.userService.updateStatus(id, status).subscribe({
+      next: () => {
+        this.loadDogadjaji(); // ponovo učitaj listu
+      },
+      error: (err) => console.error('Greška pri ažuriranju statusa', err)
     });
   }
 }

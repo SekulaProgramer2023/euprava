@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../model/User'
 import { FinansijskaKartica } from '../model/FinansijskaKartica'
+import { Dogadjaj } from '../model/dogadjaj.model';
+
 export interface LoginResponse {
   token: string;
   userId?: string;
@@ -76,5 +78,12 @@ getEmailFromToken(): string | null {
     return this.http.get<FinansijskaKartica>(`${this.karticaUrl}/user/${userId}`);
   }
 
+  getDogadjaji(): Observable<Dogadjaj[]> {
+    return this.http.get<Dogadjaj[]>(`http://localhost/domovi/dogadjaj/dogadjaji`);
+  }
+
+  updateStatus(id: string, status: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/dogadjaji/${id}/status`, { status });
+  }
 
 }

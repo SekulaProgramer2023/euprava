@@ -30,6 +30,8 @@ func main() {
 	router.HandleFunc("/users/{id}", handlers.GetUserByIDHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/by-email", handlers.GetUserByEmailHandler).Methods("POST", "OPTIONS")
 
+	router.HandleFunc("/dogadjaji/{id}/status", handlers.UpdateDogadjajStatusHandler).Methods("PUT", "OPTIONS")
+
 	router.HandleFunc("/users/{id}/alergije", handlers.UpdateAlergijeHandler).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/users/{id}/jela", handlers.UpdateOmiljenaJelaHandler).Methods("PUT", "OPTIONS")
 	c := cors.New(cors.Options{

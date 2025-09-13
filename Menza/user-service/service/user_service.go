@@ -237,3 +237,41 @@ func GetUserByEmail(email string) (models.User, error) {
 
 	return user, nil
 }
+
+type UpdateDogadjajStatusRequest struct {
+	Status string `json:"status"`
+}
+
+// Poziv ka dogadjaj-service da ažurira status događaja
+func SetDogadjajStatus(dogadjajID string, status string) error {
+	// Dozvoljeni statusi
+	if status != "prihvaćen" && status != "odbijen" {
+		return fmt.Errorf("nevalidan status: %s", status)
+	}
+
+	url := fmt.Sprintf("http://host.docker.internal/domovi/dogadjaj/dogadjaji/%s/status", dogadjajID)
+
+	body, err := json.Marshal(UpdateDogadjajStatusRequest{Status: status})
+	if err != nil {
+		return fmt.Errorf("greška pri marshalovanju requesta: %w", err)
+	}
+
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(body))
+	if err != nil {
+		return fmt.Errorf("greška pri kreiranju requesta: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("greška pri pozivu dogadjaj-service: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("dogadjaj-service vratio grešku: %s", resp.Status)
+	}
+
+	return nil
+}
