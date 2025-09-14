@@ -65,6 +65,21 @@
     </ng-template>
 
     <button (click)="closeReviewsModal()">Zatvori</button>
+    <!-- Dugme za dodavanje recenzije (samo za useljene studente) -->
+@if (role === 'User' && isUserInSelectedRoom()) {
+  <div style="margin-top: 15px;">
+    <button class="add-review-btn" 
+            (click)="openAddReviewModal()" 
+            [disabled]="hasUserReviewed()">
+      Dodaj recenziju
+    </button>
+  </div>
+}
+@if (hasUserReviewed()) {
+  <p style="color: gray; font-size: 0.9em; margin-top: 5px;">
+    Već ste ostavili recenziju za ovu sobu 
+  </p>
+}
   </div>
 </div>
 
@@ -157,6 +172,24 @@
     <div class="modal-actions" style="margin-top:10px; display:flex; gap:10px; justify-content:flex-end;">
       <button (click)="submitKvar()">Pošalji</button>
       <button (click)="closeKvarModal()">Otkaži</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal za dodavanje recenzije -->
+<div class="modal-backdrop" *ngIf="showAddReviewModal">
+  <div class="modal">
+    <h2>Dodaj recenziju</h2>
+    
+    <label>Ocena (1-5):</label>
+    <input type="number" [(ngModel)]="newReview2.rating1" min="1" max="5" style="width: 100%;" />
+
+    <label>Komentar:</label>
+    <textarea [(ngModel)]="newReview2.comment" rows="4" style="width: 100%;"></textarea>
+
+    <div class="modal-actions" style="margin-top:10px; display:flex; gap:10px; justify-content:flex-end;">
+      <button (click)="submitReview()">Pošalji</button>
+      <button (click)="closeAddReviewModal()">Otkaži</button>
     </div>
   </div>
 </div>

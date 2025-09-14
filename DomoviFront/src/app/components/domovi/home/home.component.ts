@@ -30,6 +30,13 @@ export class HomeComponent implements OnInit {
   selectedKvar: Kvar | null = null;
   showKvarDetailModal: boolean = false;
 
+  showAddReviewModal: boolean = false;
+
+newReview2: { rating1: number; comment: string } = {
+  rating1: 1,
+  comment: ''
+};
+
 averageRatingMap: { [sobaId: string]: number | null } = {};
 
   reviewsForSoba: Review[] = [];
@@ -75,7 +82,6 @@ showReviewsModal = false;
           .catch(err => console.error(err));
       }
       
- this.fetchAverageRatings();
       // Dohvati kvarove po sobi
       for (const soba of this.sobe) {
         this.kvarService.getKvaroviBySoba(soba.id).subscribe({
@@ -86,6 +92,7 @@ showReviewsModal = false;
         });
       }
     }
+     this.fetchAverageRatings();
   },
   error: (err) => this.showError("Greška pri učitavanju soba")
 });
@@ -176,7 +183,7 @@ showReviewsModal = false;
       const target = kvarovi.find(k => k.id === kvarId);
       if (target) target.status = true;
 
-      alert("Kvar označen kao rešen ✅");
+      alert("Kvar označen kao rešen");
     },
     error: (err) => {
       console.error("Greška pri označavanju kvara", err);
@@ -255,5 +262,52 @@ closeReviewsModal() {
   this.reviewsForSoba = [];
   this.selectedSobaId = null;
 }
+
+openAddReviewModal() {
+  this.newReview2 = { rating1: 1, comment: '' };
+  this.showAddReviewModal = true;
 }
+
+closeAddReviewModal() {
+  this.showAddReviewModal = false;
+}
+
+submitReview() {
+  if (!this.selectedSobaId) return;
+
+  const body = {
+    soba_id: this.selectedSobaId,
+    user_id: this.userId,
+    rating: this.newReview2.rating1,
+    comment: this.newReview2.comment
+  };
+
+  this.reviewService.createReview(body).subscribe({
+    next: () => {
+      alert("Recenzija uspešno dodata");
+      this.closeAddReviewModal();
+      this.openReviewsModal(this.selectedSobaId!); // ponovo učitaj review-e
+    },
+    error: (err) => {
+      console.error("Greška pri dodavanju recenzije", err);
+      alert("Došlo je do greške pri dodavanju recenzije.");
+    }
+  });
+}
+
+isUserInSelectedRoom(): boolean {
+  if (!this.selectedSobaId) return false;
+
+  const soba = this.sobe.find(s => s.id === this.selectedSobaId);
+  return soba ? soba.users.includes(this.userId) : false;
+}
+
+hasUserReviewed(): boolean {
+  if (!this.selectedSobaId) return false;
+  return this.reviewsForSoba.some(r => r.user_id === this.userId);
+}
+
+}
+
+
 
