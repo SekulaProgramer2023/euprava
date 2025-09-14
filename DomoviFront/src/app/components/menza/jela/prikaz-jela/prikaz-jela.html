@@ -1,13 +1,12 @@
 <div class="jela-container">
   <h2>Lista jela</h2>
 
-  <!-- Dugme za kreiranje novog jela -->
- <div class="create-button-container">
-  <button [routerLink]="['/menza/jelovnik/kreiranje-jela']" *ngIf="isAdmin">Kreiraj novo jelo</button>
-</div>
+  <div class="create-button-container">
+    <button [routerLink]="['/menza/jelovnik/kreiranje-jela']" *ngIf="isAdmin">
+      Kreiraj novo jelo
+    </button>
+  </div>
 
-
-  <!-- Dropdown za tip obroka -->
   <div class="search-container">
     <label for="tip">Filtriraj po tipu obroka:</label>
     <select id="tip" [(ngModel)]="tipPretrage" (change)="searchByTip()">
@@ -18,17 +17,9 @@
     </select>
   </div>
 
-  <!-- Loading -->
-  <div *ngIf="loading" class="loading">
-    Učitavanje jela...
-  </div>
+  <div *ngIf="loading" class="loading">Učitavanje jela...</div>
+  <div *ngIf="!loading && jela.length === 0" class="no-jela">Nema dostupnih jela.</div>
 
-  <!-- Kada nema jela -->
-  <div *ngIf="!loading && jela.length === 0" class="no-jela">
-    Nema dostupnih jela.
-  </div>
-
-  <!-- Lista jela -->
   <div *ngFor="let jelo of jela" class="jelo-card">
     <h3>{{ jelo.naziv }}</h3>
     <p><strong>Kategorija:</strong> {{ jelo.kategorija }}</p>
@@ -43,5 +34,81 @@
         </li>
       </ul>
     </div>
+
+ <!-- Dugme i prikaz prosečne ocene -->
+<div *ngIf="jelo.jeloId" class="rating">
+  <span *ngIf="averageRatingMap[jelo.jeloId!] !== null">
+    Prosečna ocena: {{ averageRatingMap[jelo.jeloId!] | number:'1.1-2' }} ⭐
+  </span>
+  <span *ngIf="averageRatingMap[jelo.jeloId!] === null">
+    Nema ocena
+  </span>
+  <button (click)="openReviewsModal(jelo.jeloId!)">
+    Prikaži ocene
+  </button>
+</div>
+
+</div>
+
+<!-- Modal za prikaz review-a -->
+<div class="modal" *ngIf="showReviewsModal">
+  <div class="modal-content">
+    <span class="close" (click)="closeReviewsModal()">&times;</span>
+    <h3>Ocene za jelo</h3>
+    
+    <div *ngIf="reviewsForJelo.length === 0">
+      Nema ocena za ovo jelo.
+    </div>
+
+    <div *ngFor="let review of reviewsForJelo" class="review-card">
+      <p><strong>Korisnik:</strong> 
+        {{ userMap[review.user_id]?.name || 'Nepoznato' }} 
+        {{ userMap[review.user_id]?.surname || '' }}
+      </p>
+      <p><strong>Ocena:</strong> {{ review.rating }} ⭐</p>
+      <p *ngIf="review.comment"><strong>Komentar:</strong> {{ review.comment }}</p>
+    </div>
   </div>
 </div>
+
+<!-- Modal CSS (možeš prebaciti u CSS fajl) -->
+<style>
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0px 0px 10px #000;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #000;
+}
+
+.review-card {
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+}
+</style>
