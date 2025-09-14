@@ -369,3 +369,22 @@ ease;
 }
 
 
+button.show-reviews-btn {
+  background-color: #4da6ff; /* svetlo plava */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button.show-reviews-btn:hover {
+  border: 1px solid gray;
+  background-color: #1976d2;
+}
+
+button.show-reviews-btn:active {
+  background-color: #1a8cff; /* još tamnija prilikom klika */
+}

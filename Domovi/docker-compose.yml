@@ -38,6 +38,18 @@ services:
     networks:
       - app-network
 
+  review-service:
+    build: ./review-service
+    ports:
+      - "8086:8086"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/euprava
+      - ENABLE_BOOTSTRAP=true
+    networks:
+      - app-network
+
   nginx:
     image: nginx:latest
     volumes:
@@ -47,6 +59,8 @@ services:
     depends_on:
       - user-service
       - sobe-service
+      - dogadjaj-service
+      - review-service
     networks:
       - app-network
 

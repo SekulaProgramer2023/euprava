@@ -7,6 +7,8 @@ import { User } from '../../../model/user.model';
 import { KvarService } from '../../../services/kvar.service';
 import { FormsModule } from '@angular/forms';
 import { Kvar } from '../../../model/kvar.model';
+import { ReviewService } from '../../../services/review.service';
+import { Review } from '../../../model/review.model'; 
 
 @Component({
   selector: 'app-home',
@@ -28,12 +30,15 @@ export class HomeComponent implements OnInit {
   selectedKvar: Kvar | null = null;
   showKvarDetailModal: boolean = false;
 
+averageRatingMap: { [sobaId: string]: number | null } = {};
 
+  reviewsForSoba: Review[] = [];
+showReviewsModal = false;
 
   showErrorModal: boolean = false;   // kontrola modala
   errorMessage: string = '';         // tekst greške
 
-  constructor(private roomService: RoomService, private router: Router, private userService: UserService, private kvarService: KvarService) {}
+  constructor(private roomService: RoomService, private router: Router, private userService: UserService, private kvarService: KvarService, private reviewService: ReviewService) {}
 
   ngOnInit(): void {
   const token = localStorage.getItem('token');
@@ -69,7 +74,8 @@ export class HomeComponent implements OnInit {
           })
           .catch(err => console.error(err));
       }
-
+      
+ this.fetchAverageRatings();
       // Dohvati kvarove po sobi
       for (const soba of this.sobe) {
         this.kvarService.getKvaroviBySoba(soba.id).subscribe({
@@ -196,5 +202,58 @@ resolveSelectedKvar() {
   }
 }
 
+fetchAverageRatings() {
+  this.sobe.forEach(soba => {
+    this.reviewService.getAverageRating(soba.id).subscribe({
+      next: (res: any) => {
+        // res.average_rating je float ili 0
+        this.averageRatingMap[soba.id] = res.average_rating > 0 ? res.average_rating : null;
+      },
+      error: () => {
+        this.averageRatingMap[soba.id] = null;
+      }
+    });
+  });
+}
+
+openReviewsModal(sobaId: string) {
+  this.selectedSobaId = sobaId;
+  this.showReviewsModal = true;
+
+  // Dohvati review-e za sobu
+  this.reviewService.getReviewsBySoba(sobaId).subscribe({
+    next: async (res: Review[]) => {
+      this.reviewsForSoba = res;
+
+      // Za svaki review dohvatiti ime i prezime korisnika
+      for (const r of this.reviewsForSoba) {
+        // Ako već imamo usera u mapi, preskoči
+        if (!this.userMap[r.user_id]) {
+          try {
+            const user = await this.userService.getUserById(r.user_id).toPromise();
+            if (user) {
+              this.userMap[r.user_id] = { name: user.name ?? 'Nepoznato', surname: user.surname ?? '' };
+            } else {
+              this.userMap[r.user_id] = { name: 'Nepoznato', surname: '' };
+            }
+          } catch (err) {
+            console.error('Greška pri dohvatanju korisnika za review', err);
+            this.userMap[r.user_id] = { name: 'Nepoznato', surname: '' };
+          }
+        }
+      }
+    },
+    error: () => {
+      this.reviewsForSoba = [];
+    }
+  });
+}
+
+
+closeReviewsModal() {
+  this.showReviewsModal = false;
+  this.reviewsForSoba = [];
+  this.selectedSobaId = null;
+}
 }
 

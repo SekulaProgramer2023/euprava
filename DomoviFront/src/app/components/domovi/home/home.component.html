@@ -31,6 +31,42 @@
   <h3>Soba {{ soba.roomNumber }}</h3>
   <p>Status: {{ soba.IsFree ? 'Slobodna' : 'Zauzeta' }}</p>
   <p>Kapacitet: {{ soba.capacity }}</p>
+  <p>
+  Prosečna ocena: 
+  <span *ngIf="averageRatingMap[soba.id] !== null">
+    {{ averageRatingMap[soba.id] | number:'1.1-2' }} ⭐
+  </span>
+  <span *ngIf="averageRatingMap[soba.id] === null">
+    Nema ocena
+  </span>
+</p>
+
+<!-- Dugme za otvaranje modal-a sa review-ima -->
+<button class="show-reviews-btn" *ngIf="averageRatingMap[soba.id] !== null" 
+        (click)="openReviewsModal(soba.id)">
+  Prikaži review-e
+</button>
+
+<!-- Modal -->
+<div style=" background-color: #64b5f6;" class="modal-backdrop" *ngIf="showReviewsModal">
+  <div style="color: black; height: auto;" class="modal">
+    <h2>Review-i za sobu</h2>
+
+    <div *ngFor="let r of reviewsForSoba; let i = index" class="review-item">
+  <p><strong>Korisnik:</strong> {{ userMap[r.user_id]?.name }} {{ userMap[r.user_id]?.surname }}</p>
+  <p><strong>Ocena:</strong> {{ r.rating }} ⭐</p>
+  <p><strong>Komentar:</strong> {{ r.comment || 'Nema komentara' }}</p>
+  <hr>
+</div>
+
+
+    <ng-template #noReviews>
+      <p>Nema review-a za ovu sobu.</p>
+    </ng-template>
+
+    <button (click)="closeReviewsModal()">Zatvori</button>
+  </div>
+</div>
 
    <!-- Ako je role User i ovo je njegova soba -->
     <button 
