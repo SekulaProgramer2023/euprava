@@ -1,0 +1,147 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Navbar stilovi */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #90caf9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  box-sizing: border-box; /* da padding ne utiče na širinu */
+}
+.navbar-left{
+    display: flex;
+    align-items: center;
+}
+
+.navbar-left a:hover{
+  border: 1px solid gray;
+  background-color: #1976d2;
+}
+
+/* Logo */
+.navbar-left .logo {
+  height: 50px;
+}
+
+.navbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.navbar-title {
+  font-size: 40px;
+  font-weight: bold;
+    font-family: "Rubik", sans-serif
+}
+
+/* Profilna slika */
+.navbar-right .profile-pic {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.profile-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  overflow: hidden;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-menu button {
+  background: none;
+  border: none;
+  padding: 10px 30px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f5f5f5;
+}
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* Container za celu stranicu */
+:host {
+  display: block;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+}
+
+/* Naslov stranice */
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+/* Lista notifikacija */
+ul {
+  list-style: none;
+  padding: 0;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Svaka notifikacija */
+li {
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Hover efekat */
+li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Poruka unutar notifikacije */
+li p {
+  margin: 0 0 5px 0;
+  color: #1976d2;;
+}
+
+/* Datum i vreme */
+li p:last-child {
+  font-size: 0.8em;
+  color: #1976d2;;
+}
+
+/* Ako nema notifikacija */
+p {
+  text-align: center;
+  color: #777;
+  font-size: 1em;
+  margin-top: 50px;
+}

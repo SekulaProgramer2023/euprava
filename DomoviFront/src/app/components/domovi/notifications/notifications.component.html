@@ -23,28 +23,25 @@
   </div>
 </nav>
 
+<h1>Sve notifikacije</h1>
 
-<div *ngIf="user; else noUser" class="profile-container">
-  <div class="profile-card">
-    <div class="profile-header">
-      <img src="https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg" 
-           alt="Profil" class="profile-avatar">
-      <h2>{{ user.name }} {{ user.surname }}</h2>
-      <p class="profile-email">{{ user.email }}</p>
-    </div>
-
-    <div class="profile-info">
-  <p><strong>Ime:</strong> {{ user?.name }}</p>
-  <p><strong>Prezime:</strong> {{ user?.surname }}</p>
-  <p><strong>Email:</strong> {{ user?.email }}</p>
-  <p><strong>Soba:</strong> {{ roomNumber }}</p>
-  <p><strong>Uloga:</strong> {{ user?.role }}</p>
+<div *ngIf="notifications.length > 0; else noNotifications">
+  <ul>
+    <li *ngFor="let n of notifications">
+      <p>{{ n.message }}</p>
+      <p style="font-size: 0.8em; color: gray;">
+        {{ n.created_at | date:'short' }}
+      </p>
+      <hr>
+    </li>
+  </ul>
 </div>
 
-  </div>
-</div>
+<ng-template #noNotifications>
+  <p>Nema notifikacija.</p>
+</ng-template>
 
-<ng-template #noUser>
-  <p>Korisnik nije učitan.</p>
+<ng-template #noNotifications>
+  <p>Nema notifikacija.</p>
 </ng-template>
 

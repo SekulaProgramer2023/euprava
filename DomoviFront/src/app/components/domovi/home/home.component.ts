@@ -146,6 +146,11 @@ showReviewsModal = false;
     this.router.navigate(['/domovi/profile']);
   }
 
+  goToNotifications(event: Event) {
+    event.stopPropagation();
+    this.router.navigate(['/domovi/notifications']);
+  }
+
   // Otvaranje modala
   openKvarModal(sobaId: string) {
     this.selectedSobaId = sobaId;

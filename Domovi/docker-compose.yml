@@ -50,6 +50,18 @@ services:
     networks:
       - app-network
 
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "8088:8088"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/euprava
+      - ENABLE_BOOTSTRAP=true
+    networks:
+      - app-network
+
   nginx:
     image: nginx:latest
     volumes:
@@ -61,6 +73,7 @@ services:
       - sobe-service
       - dogadjaj-service
       - review-service
+      - notification-service
     networks:
       - app-network
 

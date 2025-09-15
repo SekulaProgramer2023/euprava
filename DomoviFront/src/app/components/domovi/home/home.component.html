@@ -16,6 +16,7 @@
       <!-- Dropdown meni -->
       <div class="dropdown-menu" *ngIf="dropdownOpen">
         <button (click)="goToProfile($event)">Profile</button>
+        <button (click)="goToNotifications($event)">Notifications</button>
         <button (click)="logout($event)">Logout</button>
       </div>
     </div>
@@ -41,9 +42,8 @@
   </span>
 </p>
 
-<!-- Dugme za otvaranje modal-a sa review-ima -->
-<button class="show-reviews-btn" *ngIf="averageRatingMap[soba.id] !== null" 
-        (click)="openReviewsModal(soba.id)">
+<!-- Dugme za otvaranje modal-a sa review-ima (uvek vidljivo) -->
+<button class="show-reviews-btn" (click)="openReviewsModal(soba.id)">
   Prikaži review-e
 </button>
 

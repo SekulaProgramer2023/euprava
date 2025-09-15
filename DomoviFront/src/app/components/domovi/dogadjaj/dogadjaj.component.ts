@@ -112,4 +112,10 @@ export class DogadjajComponent implements OnInit {
     event.stopPropagation();
     this.router.navigate(['/domovi/profile']);
   }
+
+  goToNotifications(event: Event) {
+    event.stopPropagation();
+    this.router.navigate(['/domovi/notifications']);
+  }
+
 }

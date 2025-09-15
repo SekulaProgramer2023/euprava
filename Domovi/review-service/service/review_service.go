@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"review-service/db"
 	"review-service/models"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -71,7 +73,7 @@ func sobaExists(sobaID string) (bool, error) {
 	return false, nil
 }
 
-// Kreiranje review-a sa validacijom
+// CreateReview kreira review i šalje notifikaciju preko REST API-ja
 func CreateReview(review models.Review) (*models.Review, error) {
 	// provera usera
 	exists, err := userExists(review.UserId)
@@ -91,13 +93,92 @@ func CreateReview(review models.Review) (*models.Review, error) {
 		return nil, fmt.Errorf("soba sa ID %s ne postoji", review.SobaId)
 	}
 
-	// definisanje kolekcije unutar funkcije
+	// definisanje kolekcije za review-e
 	collection := db.Client.Database("euprava").Collection("reviews")
 
 	// insert u MongoDB
 	_, err = collection.InsertOne(context.TODO(), review)
 	if err != nil {
 		return nil, fmt.Errorf("greška pri čuvanju review-a: %w", err)
+	}
+
+	// --- priprema notifikacije sa imenom i prezimenom korisnika i brojem sobe ---
+
+	// Dohvati informacije o korisniku
+	var userFullName string
+	respUser, err := http.Get(fmt.Sprintf("http://user-service:8080/users/%s", review.UserId))
+	if err != nil {
+		return &review, fmt.Errorf("greška pri dohvatanju korisnika: %w", err)
+	}
+	defer respUser.Body.Close()
+
+	if respUser.StatusCode == http.StatusOK {
+		var user models.User
+		if err := json.NewDecoder(respUser.Body).Decode(&user); err == nil {
+			userFullName = fmt.Sprintf("%s %s", user.Name, user.Surname)
+		} else {
+			userFullName = "Nepoznati korisnik"
+		}
+	} else {
+		userFullName = "Nepoznati korisnik"
+	}
+
+	// Dohvati informacije o sobi
+	var roomNumber string
+	respRooms, err := http.Get("http://sobe-service:8082/sobe")
+	if err != nil {
+		return &review, fmt.Errorf("greška pri dohvatanju soba: %w", err)
+	}
+	defer respRooms.Body.Close()
+
+	if respRooms.StatusCode == http.StatusOK {
+		var sobe []models.Soba
+		if err := json.NewDecoder(respRooms.Body).Decode(&sobe); err == nil {
+			// traži sobu sa odgovarajućim ID-om
+			found := false
+			for _, s := range sobe {
+				if s.ID == review.SobaId {
+					fmt.Println(s)
+					roomNumber = s.RoomNumber
+					fmt.Println(roomNumber)
+					found = true
+					break
+				}
+			}
+			if !found {
+				roomNumber = review.SobaId
+			}
+		} else {
+			roomNumber = review.SobaId
+		}
+	} else {
+		roomNumber = review.SobaId
+	}
+
+	// Kreiraj notifikaciju sa imenom i brojem sobe
+	notification := map[string]interface{}{
+		"user_id":    review.UserId,
+		"soba_id":    review.SobaId,
+		"message":    fmt.Sprintf("Korisnik %s je ostavio recenziju za sobu %s", userFullName, roomNumber),
+		"rating":     review.Rating,
+		"created_at": time.Now(),
+	}
+
+	// serijalizacija u JSON
+	data, err := json.Marshal(notification)
+	if err != nil {
+		return &review, fmt.Errorf("greška pri serijalizaciji notifikacije: %w", err)
+	}
+
+	// POST zahtev ka notification-service
+	resp, err := http.Post("http://notification-service:8088/notification", "application/json", bytes.NewBuffer(data))
+	if err != nil {
+		return &review, fmt.Errorf("greška pri slanju notifikacije: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusCreated {
+		return &review, fmt.Errorf("notification-service je vratio status: %d", resp.StatusCode)
 	}
 
 	return &review, nil

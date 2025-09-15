@@ -13,6 +13,7 @@ import { PrikazJelovnik } from './components/menza/jelovnik/prikaz-jelovnik/prik
 import { HomeComponent2 } from './components/menza/home/home.component';
 import { ProfileComponent2 } from './components/menza/profile/profile.component';
 import { KreiranjeJelovnik } from './components/menza/jelovnik/kreiranje-jelovnik/kreiranje-jelovnik';
+import { NotificationComponent } from './components/domovi/notifications/notifications.component'
 
 export const routes: Routes = [
   { path: '', redirectTo: '/domovi/login', pathMatch: 'full' },
@@ -21,6 +22,7 @@ export const routes: Routes = [
   { path: 'domovi/home', component: HomeComponent },
   { path: 'domovi/profile', component: ProfileComponent },
   { path: 'domovi/dogadjaj', component: DogadjajComponent },
+  { path: 'domovi/notifications', component:  NotificationComponent},
 
 
   { path: 'menza/jelovnik/jela', component: PrikazJela },

@@ -70,4 +70,10 @@ export class ProfileComponent implements OnInit {
   goHome() {
     this.router.navigate(['/domovi/home']);
   }
+
+  goToNotifications(event: Event) {
+    event.stopPropagation();
+    this.router.navigate(['/domovi/notifications']);
+  }
+
 }
