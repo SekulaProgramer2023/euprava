@@ -137,7 +137,6 @@ addReview() {
   const payload = JSON.parse(atob(token.split('.')[1]));
   const currentUserId = payload.userId;
 
-  // VALIDACIJA
   if (this.newRating < 1 || this.newRating > 5) {
     alert('Ocena mora biti između 1 i 5!');
     return;
@@ -152,21 +151,27 @@ addReview() {
 
   this.reviewService.createReview(review).subscribe({
     next: (res) => {
-      // Dodaj review u lokalnu listu (za modal ili detaljni prikaz)
+      // Ako reviewsForJelo slučajno nije niz, postavi ga na []
+      if (!Array.isArray(this.reviewsForJelo)) {
+        this.reviewsForJelo = [];
+      }
+
+      // Dodaj review u lokalnu listu
       this.reviewsForJelo = [...this.reviewsForJelo, res];
 
-      // Reset inputa
+      // Odmah izračunaj prosečnu ocenu i upiši u mapu
+      const sum = this.reviewsForJelo.reduce((acc, r) => acc + r.rating, 0);
+      const avg = sum / this.reviewsForJelo.length;
+      this.averageRatingMap[this.selectedJeloId!] = avg;
+
+      // Reset input polja
       this.newRating = 0;
       this.newComment = '';
 
-      // Zatvori modal
-      this.showReviewsModal = false;
+      // NE zatvaraj modal – korisnik odmah vidi novu ocenu i svoj review
+      // this.showReviewsModal = false;
 
-      // Osveži Angular prikaz odmah
       this.cd.detectChanges();
-
-      // Ažuriraj prosečnu ocenu u glavnoj listi
-      this.fetchAverageRatings();
     },
     error: (err) => {
       console.error('Greška pri dodavanju review-a', err);
@@ -174,7 +179,7 @@ addReview() {
     }
   });
 }
-}
 
+}
 
 
