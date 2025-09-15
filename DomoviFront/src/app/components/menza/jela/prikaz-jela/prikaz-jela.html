@@ -51,6 +51,7 @@
 </div>
 
 <!-- Modal za prikaz review-a -->
+<!-- Modal za prikaz review-a -->
 <div class="modal" *ngIf="showReviewsModal">
   <div class="modal-content">
     <span class="close" (click)="closeReviewsModal()">&times;</span>
@@ -68,47 +69,19 @@
       <p><strong>Ocena:</strong> {{ review.rating }} ⭐</p>
       <p *ngIf="review.comment"><strong>Komentar:</strong> {{ review.comment }}</p>
     </div>
+
+    <!-- Forma za dodavanje novog review-a -->
+    <div class="add-review">
+      <h4>Dodaj svoj review</h4>
+      <label>Ocena (1-5):</label>
+      <input type="number" [(ngModel)]="newRating" min="1" max="5" />
+
+      <label>Komentar (opciono):</label>
+      <textarea [(ngModel)]="newComment"></textarea>
+
+      <button (click)="addReview()">Pošalji</button>
+    </div>
   </div>
 </div>
 
-<!-- Modal CSS (možeš prebaciti u CSS fajl) -->
-<style>
-.modal {
-  display: block;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.5);
-}
 
-.modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 10px;
-  width: 80%;
-  max-width: 500px;
-  box-shadow: 0px 0px 10px #000;
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.close:hover {
-  color: #000;
-}
-
-.review-card {
-  border-bottom: 1px solid #ccc;
-  padding: 10px 0;
-}
-</style>

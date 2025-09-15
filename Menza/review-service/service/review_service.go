@@ -71,7 +71,6 @@ func jeloExists(jeloID string) (bool, error) {
 	return false, nil
 }
 
-// Kreiranje review-a sa validacijom
 func CreateReview(review models.Review) (*models.Review, error) {
 	// provera usera
 	exists, err := userExists(review.UserId)
@@ -82,7 +81,7 @@ func CreateReview(review models.Review) (*models.Review, error) {
 		return nil, fmt.Errorf("korisnik sa ID %s ne postoji", review.UserId)
 	}
 
-	// provera sobe
+	// provera jela
 	exists, err = jeloExists(review.JeloId)
 	if err != nil {
 		return nil, err
@@ -91,8 +90,22 @@ func CreateReview(review models.Review) (*models.Review, error) {
 		return nil, fmt.Errorf("jelo sa ID %s ne postoji", review.JeloId)
 	}
 
-	// definisanje kolekcije unutar funkcije
 	collection := db.Client.Database("eupravaM").Collection("reviews")
+
+	// Provera da li korisnik već ima review za ovo jelo
+	filter := bson.M{
+		"user_id": review.UserId,
+		"jeloId":  review.JeloId,
+	}
+	var existingReview models.Review
+	err = collection.FindOne(context.TODO(), filter).Decode(&existingReview)
+	if err == nil {
+		// našao review → korisnik već ocenio ovo jelo
+		return nil, fmt.Errorf("korisnik sa ID %s je već ocenio jelo %s", review.UserId, review.JeloId)
+	} else if err != mongo.ErrNoDocuments {
+		// neka druga greška pri upitu
+		return nil, fmt.Errorf("greška pri proveri postojećeg review-a: %w", err)
+	}
 
 	// insert u MongoDB
 	_, err = collection.InsertOne(context.TODO(), review)

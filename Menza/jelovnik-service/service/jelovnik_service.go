@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"jelovnik-service/db"
 	"jelovnik-service/models"
 	"time"
@@ -96,4 +97,75 @@ func GetJelovniciSaJelima() ([]map[string]interface{}, error) {
 	}
 
 	return result, nil
+}
+func ReserveJelo(jelovnikID, jeloID primitive.ObjectID) error {
+	collection := db.Client.Database("eupravaM").Collection("jelo_statistika")
+
+	updateResult, err := collection.UpdateOne(
+		context.TODO(),
+		bson.M{
+			"jelovnikId":     jelovnikID,
+			"jeloId":         jeloID,
+			"brojPorudzbina": bson.M{"$lt": 3}, // samo ako je ispod limita
+		},
+		bson.M{
+			"$inc": bson.M{"brojPorudzbina": 1},
+			"$setOnInsert": bson.M{
+				"limit": 3,
+			},
+		},
+		options.Update().SetUpsert(true),
+	)
+
+	if err != nil {
+		return err
+	}
+
+	// Ako nije našao dokument ili je limit probijen
+	if updateResult.MatchedCount == 0 && updateResult.UpsertedCount == 0 {
+		return errors.New("limit reached for this jelo")
+	}
+
+	return nil
+}
+
+// Vraća preostali broj rezervacija za dato jelo
+func GetRemaining(jelovnikID, jeloID primitive.ObjectID) (int, error) {
+	collection := db.Client.Database("eupravaM").Collection("jelo_statistika")
+
+	var stat struct {
+		BrojPorudzbina int `bson:"brojPorudzbina"`
+		Limit          int `bson:"limit"`
+	}
+
+	err := collection.FindOne(context.TODO(), bson.M{
+		"jelovnikId": jelovnikID,
+		"jeloId":     jeloID,
+	}).Decode(&stat)
+
+	if err != nil {
+		// Ako dokument ne postoji, niko još nije rezervisao → limit 30
+		stat.BrojPorudzbina = 0
+		stat.Limit = 3
+	}
+
+	remaining := stat.Limit - stat.BrojPorudzbina
+	if remaining < 0 {
+		remaining = 0
+	}
+
+	return remaining, nil
+}
+
+// Dohvata jedan jelovnik po ID
+func GetJelovnikByID(jelovnikID primitive.ObjectID) (*models.Jelovnik, error) {
+	collection := db.Client.Database("eupravaM").Collection("jelovnici")
+
+	var jelovnik models.Jelovnik
+	err := collection.FindOne(context.TODO(), bson.M{"_id": jelovnikID}).Decode(&jelovnik)
+	if err != nil {
+		return nil, err
+	}
+
+	return &jelovnik, nil
 }

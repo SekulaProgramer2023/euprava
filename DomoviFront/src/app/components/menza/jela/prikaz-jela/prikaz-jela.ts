@@ -9,7 +9,7 @@ import { ReviewService2 } from '../../../../services/review.service2';
 import { Jelo } from '../../../../model/Jelo';
 import { Review } from '../../../../model/review2.model';
 import { UserService } from '../../../../services/user.service2';
-
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-prikaz-jela',
   standalone: true,
@@ -22,6 +22,8 @@ export class PrikazJela implements OnInit {
   loading = true;
   tipPretrage: string = '';
   isAdmin = false;
+  newRating: number = 0;
+  newComment: string = '';  
 
   averageRatingMap: { [jeloId: string]: number | null } = {};
   reviewsForJelo: Review[] = [];
@@ -34,7 +36,8 @@ export class PrikazJela implements OnInit {
     private jeloService: JeloService,
     private authService: AuthService,
     private reviewService: ReviewService2,
-    private userService: UserService
+    private userService: UserService,
+       private cd :ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -124,4 +127,54 @@ fetchAverageRatings() {
     this.reviewsForJelo = [];
     this.selectedJeloId = null;
   }
+
+addReview() {
+  if (!this.selectedJeloId) return;
+
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  const currentUserId = payload.userId;
+
+  // VALIDACIJA
+  if (this.newRating < 1 || this.newRating > 5) {
+    alert('Ocena mora biti između 1 i 5!');
+    return;
+  }
+
+  const review: Review = {
+    jeloId: this.selectedJeloId,
+    user_id: currentUserId,
+    rating: this.newRating,
+    comment: this.newComment
+  };
+
+  this.reviewService.createReview(review).subscribe({
+    next: (res) => {
+      // Dodaj review u lokalnu listu (za modal ili detaljni prikaz)
+      this.reviewsForJelo = [...this.reviewsForJelo, res];
+
+      // Reset inputa
+      this.newRating = 0;
+      this.newComment = '';
+
+      // Zatvori modal
+      this.showReviewsModal = false;
+
+      // Osveži Angular prikaz odmah
+      this.cd.detectChanges();
+
+      // Ažuriraj prosečnu ocenu u glavnoj listi
+      this.fetchAverageRatings();
+    },
+    error: (err) => {
+      console.error('Greška pri dodavanju review-a', err);
+      alert('Došlo je do greške pri dodavanju review-a.');
+    }
+  });
 }
+}
+
+
+

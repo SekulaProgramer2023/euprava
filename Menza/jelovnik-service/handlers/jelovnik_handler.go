@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"jelovnik-service/service"
 	"net/http"
 	"time"
@@ -91,4 +92,65 @@ func GetJelovniciSaJelimaHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(jelovnici)
+}
+func ReserveJeloHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jelovnikID, _ := primitive.ObjectIDFromHex(vars["jelovnikId"])
+	jeloID, _ := primitive.ObjectIDFromHex(vars["jeloId"])
+
+	err := service.ReserveJelo(jelovnikID, jeloID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusConflict)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("reserved"))
+}
+func GetRemainingJeloHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jelovnikIDHex := vars["jelovnikId"]
+	jeloIDHex := vars["jeloId"]
+
+	jelovnikID, err := primitive.ObjectIDFromHex(jelovnikIDHex)
+	if err != nil {
+		http.Error(w, "nepravilan jelovnikID", http.StatusBadRequest)
+		return
+	}
+
+	jeloID, err := primitive.ObjectIDFromHex(jeloIDHex)
+	if err != nil {
+		http.Error(w, "nepravilan jeloID", http.StatusBadRequest)
+		return
+	}
+
+	remaining, err := service.GetRemaining(jelovnikID, jeloID)
+	if err != nil {
+		http.Error(w, "greska pri dohvatanju remaining", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]int{
+		"remaining": remaining,
+	})
+}
+func GetJelovnikByIDHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jelovnikIDHex := vars["jelovnikId"]
+
+	jelovnikID, err := primitive.ObjectIDFromHex(jelovnikIDHex)
+	if err != nil {
+		http.Error(w, "Neispravan jelovnikID", http.StatusBadRequest)
+		return
+	}
+
+	jelovnik, err := service.GetJelovnikByID(jelovnikID)
+	if err != nil {
+		http.Error(w, "Jelovnik nije pronađen", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(jelovnik)
 }

@@ -26,7 +26,7 @@ export class ReviewService2 {
 
   // Kreiranje review-a
   createReview(review: Review): Observable<Review> {
-    return this.http.post<Review>(`${this.apiUrl}`, review);
+    return this.http.post<Review>(`${this.apiUrl}/create`, review);
   }
 
   // Dohvatanje svih review-a

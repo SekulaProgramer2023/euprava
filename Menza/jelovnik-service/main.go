@@ -38,6 +38,10 @@ func main() {
 	router.HandleFunc("/jelovnik", handlers.CreateJelovnikHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/jelovnik", handlers.GetJelovnikeHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/jelovnici-sa-jelima", handlers.GetJelovniciSaJelimaHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/{jelovnikId}/jela/{jeloId}/reserve", handlers.ReserveJeloHandler).Methods("POST")
+	router.HandleFunc("/{jelovnikId}/jela/{jeloId}/remaining", handlers.GetRemainingJeloHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/jelovnik/{jelovnikId}", handlers.GetJelovnikByIDHandler).Methods("GET", "OPTIONS")
+
 	// CORS konfiguracija
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"}, // front-end origin

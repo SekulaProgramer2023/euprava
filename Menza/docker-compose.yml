@@ -45,7 +45,17 @@ services:
       - ENABLE_BOOTSTRAP=true
     networks:
       - app-network
-
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "8089:8089"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/eupravaM
+      - ENABLE_BOOTSTRAP=true
+    networks:
+      - app-network
   nginx:
     image: nginx:latest
     volumes:

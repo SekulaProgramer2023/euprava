@@ -91,21 +91,25 @@
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: #0d47a1;
+  background-color: rgba(0, 0, 0, 0.4); /* providna crna pozadina */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-content {
-  background-color: #0d47a1;
-  margin: 10% auto;
+  background-color: #e3f2fd; /* ista svetlija plava kao jelo-card */
+  color: #0d47a1; /* tamnoplava boja teksta */
+  margin: auto;
   padding: 20px;
-  border-radius: 10px;
-  width: 80%;
+  border-radius: 12px;
+  width: 90%;
   max-width: 500px;
-  box-shadow: 0px 0px 10px #000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .close {
-  color: #aaa;
+  color: #0d47a1;
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -113,11 +117,41 @@
 }
 
 .close:hover {
-  color: #0d47a1;
+  color: #1976d2; /* tamnija plava pri hoveru */
 }
 
 .review-card {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #90caf9;
   padding: 10px 0;
 }
 
+.add-review {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #90caf9;
+}
+
+.add-review input,
+.add-review textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0 10px 0;
+  border-radius: 6px;
+  border: 1px solid #90caf9;
+  font-size: 14px;
+}
+
+.add-review button {
+  padding: 8px 16px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.add-review button:hover {
+  background-color: #0d47a1;
+}

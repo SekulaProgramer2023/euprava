@@ -59,6 +59,9 @@ export class HomeComponent2 implements OnInit {
     event.stopPropagation();
     this.router.navigate(['/menza/profile']);
   }
+    goToNotifications() {
+    this.router.navigate(['/menza/notifications']); // ide na notifications stranicu
+  }
 deposit() {
   if (!this.depositAmount || this.depositAmount <= 0) return;
 

@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { JelovnikService } from './../../../../services/jelovnik.service';
 import { FinansijskaKarticaService } from './../../../../services/finansijskaKartica.service';
 import { JelovnikPrikaz } from './../../../../model/JelovnikPrikaz';
-
+import { AuthService } from '../../../../services/auth.service';
 @Component({
   selector: 'app-prikaz-jelovnik',
   standalone: true,
@@ -21,7 +21,8 @@ export class PrikazJelovnik implements OnInit {
 
   constructor(
     private jelovnikService: JelovnikService,
-    private karticaService: FinansijskaKarticaService
+    private karticaService: FinansijskaKarticaService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -37,7 +38,7 @@ export class PrikazJelovnik implements OnInit {
       }
     }
 
-    this.isAdmin = this.role === 'ADMIN';
+    this.isAdmin = this.authService.isAdmin();
 
     // 2. Dohvati jelovnike
     this.jelovnikService.getJelovnici().subscribe({

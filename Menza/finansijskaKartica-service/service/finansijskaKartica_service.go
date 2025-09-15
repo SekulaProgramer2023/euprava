@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"finansijskaKartica-service/models"
@@ -132,7 +133,7 @@ func (s *FinansijskaKarticaService) BuyDorucak(userID primitive.ObjectID, count 
 	return s.buyMeals(userID, 70, "dorucakCount", count)
 }
 func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID string) (models.FinansijskaKartica, error) {
-	// 1. Dohvati sve jelovnike
+	// 1. Dohvati sve jelovnike preko REST poziva
 	jelovnici, err := GetJelovnici()
 	if err != nil {
 		return models.FinansijskaKartica{}, err
@@ -187,7 +188,63 @@ func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID st
 		return models.FinansijskaKartica{}, fmt.Errorf("već ste iskoristili maksimalan broj %s za datum %s", jelo.TipObroka, datumJelovnika.Format("02.01.2006"))
 	}
 
-	// 7. Smanji count po tipu obroka u kartici
+	// 7. Poziv ka jelovnik-servisu da proveri remaining
+	remainingURL := fmt.Sprintf("http://host.docker.internal:81/menza/jelovnik/%s/jela/%s/remaining", jelovnikID, jeloID)
+	resp, err := http.Get(remainingURL)
+	if err != nil {
+		return models.FinansijskaKartica{}, fmt.Errorf("greska pri dohvatanju remaining: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return models.FinansijskaKartica{}, fmt.Errorf("greska: status %d pri dohvatanju remaining", resp.StatusCode)
+	}
+
+	var data struct {
+		Remaining int `json:"remaining"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		return models.FinansijskaKartica{}, fmt.Errorf("greska pri parsiranju remaining: %v", err)
+	}
+
+	if data.Remaining <= 0 {
+		return models.FinansijskaKartica{}, fmt.Errorf("nije moguce iskoristiti jelo, limit je dostignut")
+	}
+
+	// 8. REST poziv da rezerviše jelo (smanji remaining)
+	reserveURL := fmt.Sprintf("http://host.docker.internal:81/menza/jelovnik/%s/jela/%s/reserve", jelovnikID, jeloID)
+	resResp, err := http.Post(reserveURL, "application/json", nil)
+	if err != nil {
+		return models.FinansijskaKartica{}, fmt.Errorf("greska pri rezervaciji jela: %v", err)
+	}
+	defer resResp.Body.Close()
+	if resResp.StatusCode != http.StatusOK {
+		return models.FinansijskaKartica{}, fmt.Errorf("nije moguce rezervisati jelo, status %d", resResp.StatusCode)
+	}
+
+	if data.Remaining <= 2 {
+		notifBody := map[string]interface{}{
+			"title":      fmt.Sprintf("Ostatak jela: %s", jelo.Naziv),
+			"message":    fmt.Sprintf("Za jelovnik %s, ostalo je još %d porcije jela %s", jelovnikID, data.Remaining, jelo.Naziv),
+			"type":       "obrok",
+			"jelovnikID": jelovnikID,
+			"jeloID":     jeloID,
+			"jeloNaziv":  jelo.Naziv,
+			"datum":      datumJelovnika.UTC().Format(time.RFC3339), // mora biti "datum" da handler čita
+			"remaining":  data.Remaining,
+		}
+
+		bodyBytes, _ := json.Marshal(notifBody)
+		resp, err := http.Post("http://notification-service:8089/jelo-remaining", "application/json", bytes.NewReader(bodyBytes))
+		if err != nil {
+			fmt.Printf("Greška pri slanju notifikacije: %v\n", err)
+		} else {
+			defer resp.Body.Close()
+			respBody, _ := io.ReadAll(resp.Body)
+			fmt.Println("Notification service odgovor:", string(respBody))
+		}
+	}
+
+	// 10. Smanji count po tipu obroka u kartici
 	switch jelo.TipObroka {
 	case "dorucak":
 		if kartica.DorucakCount <= 0 {
@@ -208,7 +265,7 @@ func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID st
 		return models.FinansijskaKartica{}, fmt.Errorf("nepoznat tip obroka")
 	}
 
-	// 8. Dodaj jelo u istoriju iskorišćenih jela sa datumom iz jelovnika
+	// 11. Dodaj u istoriju iskorišćenih jela
 	kartica.IskoriscenaJela = append(kartica.IskoriscenaJela, models.IskoriscenoJelo{
 		Datum:     datumJelovnika,
 		JeloID:    jelo.JeloID,
@@ -216,7 +273,7 @@ func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID st
 		TipObroka: jelo.TipObroka,
 	})
 
-	// 9. Update baze
+	// 12. Update baze
 	_, err = s.Collection.UpdateOne(
 		context.TODO(),
 		bson.M{"userId": oid},
@@ -226,7 +283,7 @@ func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID st
 		return models.FinansijskaKartica{}, err
 	}
 
-	// 10. Vrati ažuriranu karticu
+	// 13. Vrati ažuriranu karticu
 	return kartica, nil
 }
 
