@@ -1,0 +1,18 @@
+<div class="jela-container" *ngIf="statistika">
+  <h2>📊 Statistika iskorišćenih obroka</h2>
+
+  <div *ngFor="let datum of getObjectKeys(statistika)" class="datum-card">
+    <h3>📅 {{ datum }} (Ukupno ljudi: {{ statistika[datum].ukupnoLjudi }})</h3>
+
+    <div *ngFor="let jelo of getObjectKeys(statistika[datum].jela)" class="jelo-box">
+      <p>
+        🍽️ {{ jelo }} — {{ statistika[datum].jela[jelo].tipObroka }} — {{ statistika[datum].jela[jelo].count }} puta
+      </p>
+      <ul>
+        <li *ngFor="let osoba of statistika[datum].jela[jelo].osobe">
+          🧑🏻 {{ osoba }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

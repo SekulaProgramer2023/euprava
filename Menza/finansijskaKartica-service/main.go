@@ -36,6 +36,7 @@ func main() {
 	router.HandleFunc("/kartice/{userId}/buy/dorucak", karticaHandler.BuyDorucakHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/kartice/iskoristi/{userId}/{jelovnikId}/{jeloId}",
 		karticaHandler.IskoristiObrokHandler).Methods("POST", "OPTIONS")
+	router.HandleFunc("/kartice/statistika", karticaHandler.GetStatistikaHandler).Methods("GET", "OPTIONS")
 
 	// dodaj druge rute kasnije ako bude potrebno, npr GET po userId
 

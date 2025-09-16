@@ -4,6 +4,7 @@
   <!-- Dugme za kreiranje jelovnika samo za admina -->
   <div class="create-button-container" *ngIf="isAdmin">
     <button [routerLink]="['/menza/jelovnik/kreiranje-jelovnika']">Dodaj jelovnik</button>
+          <button [routerLink]="['/menza/statistika']" class="nav-link">Statistika</button>
   </div>
 
   <!-- Loading indikator -->

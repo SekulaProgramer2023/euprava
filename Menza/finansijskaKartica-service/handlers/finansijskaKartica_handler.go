@@ -207,3 +207,17 @@ func (h *KarticaHandler) IskoristiObrokHandler(w http.ResponseWriter, r *http.Re
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(kartica)
 }
+
+// GET /kartice/statistika
+func (h *KarticaHandler) GetStatistikaHandler(w http.ResponseWriter, r *http.Request) {
+	statistika, err := h.Service.GetStatistika()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(statistika); err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+	}
+}

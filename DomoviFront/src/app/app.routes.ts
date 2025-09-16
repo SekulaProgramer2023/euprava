@@ -15,6 +15,7 @@ import { ProfileComponent2 } from './components/menza/profile/profile.component'
 import { KreiranjeJelovnik } from './components/menza/jelovnik/kreiranje-jelovnik/kreiranje-jelovnik';
 import { NotificationComponent } from './components/domovi/notifications/notifications.component'
 import { Notifications } from './components/menza/notifications/notifications'
+import { StatistikaPrikaz } from './components/menza/statistika-prikaz/statistika-prikaz'
 export const routes: Routes = [
   { path: '', redirectTo: '/domovi/login', pathMatch: 'full' },
   { path: 'domovi/login', component: LoginComponent },
@@ -35,4 +36,5 @@ export const routes: Routes = [
   { path: 'menza/register', component: RegisterComponent2 },
   { path: 'menza/profile', component: ProfileComponent2 },
   { path: 'menza/notifications', component:  Notifications},
+    { path: 'menza/statistika', component:  StatistikaPrikaz},
 ];

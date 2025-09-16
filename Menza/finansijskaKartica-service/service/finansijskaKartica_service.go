@@ -304,3 +304,59 @@ func GetJelovnici() ([]models.Jelovnik, error) {
 
 	return jelovnici, nil
 }
+
+// GetStatistika vraća statistiku iskorišćenih jela grupisano po datumu
+func (s *FinansijskaKarticaService) GetStatistika() (map[string]map[string]interface{}, error) {
+	var kartice []models.FinansijskaKartica
+	cursor, err := s.Collection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	if err := cursor.All(context.TODO(), &kartice); err != nil {
+		return nil, err
+	}
+
+	statistika := make(map[string]map[string]interface{})
+	// pomoćna mapa za praćenje jedinstvenih korisnika po datumu
+	usersPerDate := make(map[string]map[string]struct{})
+
+	for _, k := range kartice {
+		fullName := fmt.Sprintf("%s %s", k.Ime, k.Prezime)
+		userHex := k.UserID.Hex()
+		for _, isk := range k.IskoriscenaJela {
+			// koristimo datum kao string ključ (YYYY-MM-DD)
+			date := isk.Datum.Format("2006-01-02")
+
+			// inicijalizacija strukture za datum ako ne postoji
+			if _, ok := statistika[date]; !ok {
+				statistika[date] = map[string]interface{}{
+					"ukupnoLjudi": 0,
+					"jela":        map[string]map[string]interface{}{},
+				}
+				usersPerDate[date] = map[string]struct{}{}
+			}
+
+			// dodaj korisnika u skup (da bismo dobili unikatne korisnike)
+			if _, seen := usersPerDate[date][userHex]; !seen {
+				usersPerDate[date][userHex] = struct{}{}
+				statistika[date]["ukupnoLjudi"] = len(usersPerDate[date])
+			}
+
+			// ažuriraj statistiku za jelo
+			jelaMap := statistika[date]["jela"].(map[string]map[string]interface{})
+			if _, ok := jelaMap[isk.Naziv]; !ok {
+				jelaMap[isk.Naziv] = map[string]interface{}{
+					"count":     0,
+					"tipObroka": isk.TipObroka,
+					"osobe":     []string{},
+				}
+			}
+
+			entry := jelaMap[isk.Naziv]
+			entry["count"] = entry["count"].(int) + 1
+			entry["osobe"] = append(entry["osobe"].([]string), fullName)
+		}
+	}
+
+	return statistika, nil
+}

@@ -62,6 +62,10 @@ iskoristiObrok(userId: string, jelovnikId: string, jeloId: string): Observable<F
     {}
   );
 }
+// Statistika o iskorišćenim obrocima
+getStatistika(): Observable<any> {
+  return this.http.get<any>(`${this.baseUrl}/kartice/statistika`);
+}
 
 
 }
