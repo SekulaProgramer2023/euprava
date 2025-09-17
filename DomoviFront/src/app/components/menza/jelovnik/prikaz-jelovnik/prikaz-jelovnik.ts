@@ -17,6 +17,7 @@ export class PrikazJelovnik implements OnInit {
   loading = true;
   isAdmin = false;
   userId: string = '';
+  email:string = '';
   role: string = '';
 
   constructor(
@@ -33,6 +34,7 @@ export class PrikazJelovnik implements OnInit {
         const payload = JSON.parse(atob(token.split('.')[1]));
         this.role = payload.role || '';
         this.userId = payload.userId || '';
+           this.email = payload.email || '';
       } catch (e) {
         console.error('Neuspešno parsiranje tokena', e);
       }
@@ -55,21 +57,22 @@ export class PrikazJelovnik implements OnInit {
 
   // 3. Funkcija za iskorišćavanje obroka
 iskoristiObrok(jelovnikId: string, jeloId: string) {
-  if (!this.userId) {
+  if (!this.email) {  // pretpostavljam da čuvaš email prijavljenog korisnika
     alert('Niste prijavljeni!');
     return;
   }
 
-  this.karticaService.iskoristiObrok(this.userId, jelovnikId, jeloId).subscribe({
+  this.karticaService.iskoristiObrok(this.email, jelovnikId, jeloId).subscribe({
     next: (kartica) => {
       alert('Obrok uspešno iskorišćen!');
       console.log('Nova kartica:', kartica);
     },
     error: (err) => {
-      alert('Greška pri iskorišćavanju obroka: ' + err.error);
+      alert('Greška pri iskorišćavanju obroka: ' + (err.error || err.message));
       console.error(err);
     }
   });
 }
+
 
 }

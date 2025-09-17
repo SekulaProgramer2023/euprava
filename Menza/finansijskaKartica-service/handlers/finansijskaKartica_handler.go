@@ -21,6 +21,7 @@ func (h *KarticaHandler) CreateKarticaHandler(w http.ResponseWriter, r *http.Req
 		UserID  string `json:"userId"`
 		Ime     string `json:"ime"`
 		Prezime string `json:"prezime"`
+		Email   string `json:"email"` // novo polje
 		Index   string `json:"index"`
 	}
 
@@ -37,7 +38,8 @@ func (h *KarticaHandler) CreateKarticaHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	kartica := models.NewFinansijskaKartica(userID, req.Ime, req.Prezime, req.Index)
+	// Prosledjujemo email konstruktoru
+	kartica := models.NewFinansijskaKartica(userID, req.Ime, req.Prezime, req.Email, req.Index)
 
 	created, err := h.Service.CreateKartica(kartica)
 	if err != nil {
@@ -48,6 +50,7 @@ func (h *KarticaHandler) CreateKarticaHandler(w http.ResponseWriter, r *http.Req
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(created)
 }
+
 func (h *KarticaHandler) GetKarticaByUserHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userIDHex := vars["userId"]
@@ -67,15 +70,26 @@ func (h *KarticaHandler) GetKarticaByUserHandler(w http.ResponseWriter, r *http.
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(kartica)
 }
+func (h *KarticaHandler) GetKarticaByEmailHandler(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		http.Error(w, "email query param is required", http.StatusBadRequest)
+		return
+	}
 
-// POST /kartice/{userId}/deposit
-func (h *KarticaHandler) DepositHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userIDHex := vars["userId"]
-
-	userID, err := primitive.ObjectIDFromHex(userIDHex)
+	kartica, err := h.Service.GetKarticaByEmail(email)
 	if err != nil {
-		http.Error(w, "invalid userId", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(kartica)
+}
+func (h *KarticaHandler) DepositHandler(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		http.Error(w, "email query param is required", http.StatusBadRequest)
 		return
 	}
 
@@ -87,7 +101,7 @@ func (h *KarticaHandler) DepositHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	updated, err := h.Service.Deposit(userID, req.Novac)
+	updated, err := h.Service.DepositByEmail(email, req.Novac)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -109,14 +123,10 @@ func (h *KarticaHandler) GetKarticeHandler(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(kartice)
 }
 
-// Kupovina doručka
 func (h *KarticaHandler) BuyRuckoviHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userIDHex := vars["userId"]
-
-	userID, err := primitive.ObjectIDFromHex(userIDHex)
-	if err != nil {
-		http.Error(w, "invalid userId", http.StatusBadRequest)
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		http.Error(w, "email query param is required", http.StatusBadRequest)
 		return
 	}
 
@@ -128,7 +138,7 @@ func (h *KarticaHandler) BuyRuckoviHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	updated, err := h.Service.BuyRuckovi(userID, req.Count)
+	updated, err := h.Service.BuyRuckoviByEmail(email, req.Count)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -139,12 +149,9 @@ func (h *KarticaHandler) BuyRuckoviHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *KarticaHandler) BuyVecereHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userIDHex := vars["userId"]
-
-	userID, err := primitive.ObjectIDFromHex(userIDHex)
-	if err != nil {
-		http.Error(w, "invalid userId", http.StatusBadRequest)
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		http.Error(w, "email query param is required", http.StatusBadRequest)
 		return
 	}
 
@@ -156,7 +163,7 @@ func (h *KarticaHandler) BuyVecereHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	updated, err := h.Service.BuyVecere(userID, req.Count)
+	updated, err := h.Service.BuyVecereByEmail(email, req.Count)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -165,13 +172,11 @@ func (h *KarticaHandler) BuyVecereHandler(w http.ResponseWriter, r *http.Request
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(updated)
 }
+
 func (h *KarticaHandler) BuyDorucakHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userIDHex := vars["userId"]
-
-	userID, err := primitive.ObjectIDFromHex(userIDHex)
-	if err != nil {
-		http.Error(w, "invalid userId", http.StatusBadRequest)
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		http.Error(w, "email query param is required", http.StatusBadRequest)
 		return
 	}
 
@@ -183,7 +188,7 @@ func (h *KarticaHandler) BuyDorucakHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	updated, err := h.Service.BuyDorucak(userID, req.Count)
+	updated, err := h.Service.BuyDorucakByEmail(email, req.Count)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -192,13 +197,18 @@ func (h *KarticaHandler) BuyDorucakHandler(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(updated)
 }
-func (h *KarticaHandler) IskoristiObrokHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userID := vars["userId"]
-	jelovnikID := vars["jelovnikId"] // novo
-	jeloID := vars["jeloId"]
 
-	kartica, err := h.Service.IskoristiObrok(userID, jelovnikID, jeloID)
+func (h *KarticaHandler) IskoristiObrokHandler(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
+	jelovnikID := r.URL.Query().Get("jelovnikId")
+	jeloID := r.URL.Query().Get("jeloId")
+
+	if email == "" || jelovnikID == "" || jeloID == "" {
+		http.Error(w, "nedostaju parametri (email, jelovnikId, jeloId)", http.StatusBadRequest)
+		return
+	}
+
+	kartica, err := h.Service.IskoristiObrok(email, jelovnikID, jeloID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

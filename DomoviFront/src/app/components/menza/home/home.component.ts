@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms'; // <--- dodaj ovo
 export class HomeComponent2 implements OnInit {
   role: string = '';
   userId: string = '';
+  email: string = '';
   dropdownOpen: boolean = false;
   kartica?: FinansijskaKartica;
     depositAmount: number = 0;
@@ -36,9 +37,9 @@ export class HomeComponent2 implements OnInit {
       const payload = JSON.parse(atob(token.split('.')[1]));
       this.role = payload.role;
       this.userId = payload.userId;
-
+      this.email=payload.email;
       // Dohvati karticu za korisnika
-      this.karticaService.getKarticaByUser(this.userId).subscribe({
+      this.karticaService.getKarticaByEmail(this.email).subscribe({
         next: (data) => this.kartica = data,
         error: (err) => console.error('Greška pri dohvaćanju kartice:', err)
       });
@@ -65,7 +66,7 @@ export class HomeComponent2 implements OnInit {
 deposit() {
   if (!this.depositAmount || this.depositAmount <= 0) return;
 
-  this.karticaService2.deposit(this.userId, this.depositAmount).subscribe({
+  this.karticaService2.deposit(this.email, this.depositAmount).subscribe({
     next: (updated: FinansijskaKartica) => {
       this.kartica = updated;
       this.depositAmount = 0; // reset
@@ -77,7 +78,7 @@ deposit() {
 buyDorucak() {
   if (!this.dorucakCount || this.dorucakCount <= 0) return;
 
-  this.karticaService2.buyDorucak(this.userId, this.dorucakCount).subscribe({
+  this.karticaService2.buyDorucak(this.email, this.dorucakCount).subscribe({
     next: (updated: FinansijskaKartica) => {
       this.kartica = updated;
       this.dorucakCount = 1;
@@ -89,7 +90,7 @@ buyDorucak() {
 buyRucak() {
   if (!this.rucakCount || this.rucakCount <= 0) return;
 
-  this.karticaService2.buyRucak(this.userId, this.rucakCount).subscribe({
+  this.karticaService2.buyRucak(this.email, this.rucakCount).subscribe({
     next: (updated: FinansijskaKartica) => {
       this.kartica = updated;
       this.rucakCount = 1;
@@ -101,7 +102,7 @@ buyRucak() {
 buyVecera() {
   if (!this.veceraCount || this.veceraCount <= 0) return;
 
-  this.karticaService2.buyVecera(this.userId, this.veceraCount).subscribe({
+  this.karticaService2.buyVecera(this.email, this.veceraCount).subscribe({
     next: (updated: FinansijskaKartica) => {
       this.kartica = updated;
       this.veceraCount = 1;
@@ -109,6 +110,7 @@ buyVecera() {
     error: (err: any | HttpErrorResponse) => alert(err.error || err.message)
   });
 }
+
 
 
 openHistoryModal() {

@@ -102,8 +102,10 @@ func RegisterUser(user models.User) (models.User, error) {
 		"userId":  userID,
 		"ime":     user.Name,
 		"prezime": user.Surname,
+		"email":   user.Email, // dodato polje
 		"index":   "2023/001",
 	})
+
 	if err != nil {
 		return models.User{}, fmt.Errorf("failed to marshal kartica body: %v", err)
 	}

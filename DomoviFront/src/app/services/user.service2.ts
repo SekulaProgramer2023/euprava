@@ -77,6 +77,11 @@ getEmailFromToken(): string | null {
    getKarticaByUser(userId: string): Observable<FinansijskaKartica> {
     return this.http.get<FinansijskaKartica>(`${this.karticaUrl}/user/${userId}`);
   }
+  getKarticaByEmail(email: string): Observable<FinansijskaKartica> {
+  return this.http.get<FinansijskaKartica>(`${this.karticaUrl}/userE/by-email`, {
+    params: { email }   // email ide kao query parametar
+  });
+}
 
   getDogadjaji(): Observable<Dogadjaj[]> {
     return this.http.get<Dogadjaj[]>(`http://localhost/domovi/dogadjaj/dogadjaji`);

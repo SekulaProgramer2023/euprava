@@ -10,6 +10,7 @@ type FinansijskaKartica struct {
 	UserID          primitive.ObjectID `bson:"userId" json:"userId"`
 	Ime             string             `bson:"ime" json:"ime"`
 	Prezime         string             `bson:"prezime" json:"prezime"`
+	Email           string             `bson:"email" json:"email"` // novo polje
 	Index           string             `bson:"index" json:"index"`
 	Novac           float64            `bson:"novac" json:"novac"`
 	DorucakCount    int                `bson:"dorucakCount" json:"dorucakCount"`
@@ -17,6 +18,7 @@ type FinansijskaKartica struct {
 	VeceraCount     int                `bson:"veceraCount" json:"veceraCount"`
 	IskoriscenaJela []IskoriscenoJelo  `bson:"iskoriscenaJela" json:"iskoriscenaJela"`
 }
+
 type IskoriscenoJelo struct {
 	Datum     time.Time `bson:"datum" json:"datum"`
 	JeloID    string    `bson:"jeloId" json:"jeloId"`
@@ -24,11 +26,13 @@ type IskoriscenoJelo struct {
 	TipObroka string    `bson:"tipObroka" json:"tipObroka"`
 }
 
-func NewFinansijskaKartica(userID primitive.ObjectID, ime, prezime, index string) FinansijskaKartica {
+// Konstruktor sa email-om
+func NewFinansijskaKartica(userID primitive.ObjectID, ime, prezime, email, index string) FinansijskaKartica {
 	return FinansijskaKartica{
 		UserID:       userID,
 		Ime:          ime,
 		Prezime:      prezime,
+		Email:        email, // inicijalizacija email-a
 		Index:        index,
 		Novac:        0.0,
 		DorucakCount: 0,

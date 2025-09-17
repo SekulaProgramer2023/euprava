@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"net/http"
+	"notification-service/bootstrap"
 	"notification-service/db"
 	"notification-service/handlers"
 	"os"
@@ -18,7 +19,7 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.DisconnectMongo()
-	//bootstrap.ClearNotifications()
+	bootstrap.ClearNotifications()
 
 	router := mux.NewRouter()
 	router.HandleFunc("/jelo-remaining", handlers.CreateJeloRemainingNotificationHandler).Methods("POST", "OPTIONS")

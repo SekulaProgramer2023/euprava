@@ -48,10 +48,8 @@ func (s *FinansijskaKarticaService) GetKartice() ([]models.FinansijskaKartica, e
 	}
 	return kartice, nil
 }
-
-// Uplata novca na karticu
-func (s *FinansijskaKarticaService) Deposit(userID primitive.ObjectID, novac float64) (models.FinansijskaKartica, error) {
-	filter := bson.M{"userId": userID}
+func (s *FinansijskaKarticaService) DepositByEmail(email string, novac float64) (models.FinansijskaKartica, error) {
+	filter := bson.M{"email": email}
 	update := bson.M{"$inc": bson.M{"novac": novac}}
 
 	var updated models.FinansijskaKartica
@@ -59,11 +57,11 @@ func (s *FinansijskaKarticaService) Deposit(userID primitive.ObjectID, novac flo
 		context.TODO(),
 		filter,
 		update,
-		options.FindOneAndUpdate().SetReturnDocument(options.After), // << ovo je ključno
+		options.FindOneAndUpdate().SetReturnDocument(options.After),
 	).Decode(&updated)
 
 	if err == mongo.ErrNoDocuments {
-		return models.FinansijskaKartica{}, fmt.Errorf("kartica not found for user %s", userID.Hex())
+		return models.FinansijskaKartica{}, fmt.Errorf("kartica not found for email %s", email)
 	}
 	if err != nil {
 		return models.FinansijskaKartica{}, err
@@ -82,13 +80,22 @@ func (s *FinansijskaKarticaService) GetKarticaByUserID(userID primitive.ObjectID
 	}
 	return kartica, nil
 }
-
-// Kupovina doručka (70 RSD)
-func (s *FinansijskaKarticaService) buyMeals(userID primitive.ObjectID, cena float64, field string, count int) (models.FinansijskaKartica, error) {
+func (s *FinansijskaKarticaService) GetKarticaByEmail(email string) (models.FinansijskaKartica, error) {
 	var kartica models.FinansijskaKartica
-	err := s.Collection.FindOne(context.TODO(), bson.M{"userId": userID}).Decode(&kartica)
+	err := s.Collection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&kartica)
 	if err == mongo.ErrNoDocuments {
-		return models.FinansijskaKartica{}, fmt.Errorf("kartica not found for user %s", userID.Hex())
+		return models.FinansijskaKartica{}, fmt.Errorf("kartica with email %s not found", email)
+	} else if err != nil {
+		return models.FinansijskaKartica{}, err
+	}
+	return kartica, nil
+}
+
+func (s *FinansijskaKarticaService) buyMealsByEmail(email string, cena float64, field string, count int) (models.FinansijskaKartica, error) {
+	var kartica models.FinansijskaKartica
+	err := s.Collection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&kartica)
+	if err == mongo.ErrNoDocuments {
+		return models.FinansijskaKartica{}, fmt.Errorf("kartica not found for email %s", email)
 	}
 	if err != nil {
 		return models.FinansijskaKartica{}, err
@@ -109,9 +116,9 @@ func (s *FinansijskaKarticaService) buyMeals(userID primitive.ObjectID, cena flo
 	var updated models.FinansijskaKartica
 	err = s.Collection.FindOneAndUpdate(
 		context.TODO(),
-		bson.M{"userId": userID},
+		bson.M{"email": email},
 		update,
-		options.FindOneAndUpdate().SetReturnDocument(options.After), // << ovo je ključno
+		options.FindOneAndUpdate().SetReturnDocument(options.After),
 	).Decode(&updated)
 
 	if err != nil {
@@ -121,18 +128,19 @@ func (s *FinansijskaKarticaService) buyMeals(userID primitive.ObjectID, cena flo
 	return updated, nil
 }
 
-func (s *FinansijskaKarticaService) BuyRuckovi(userID primitive.ObjectID, count int) (models.FinansijskaKartica, error) {
-	return s.buyMeals(userID, 120, "rucakCount", count)
+func (s *FinansijskaKarticaService) BuyRuckoviByEmail(email string, count int) (models.FinansijskaKartica, error) {
+	return s.buyMealsByEmail(email, 120, "rucakCount", count)
 }
 
-func (s *FinansijskaKarticaService) BuyVecere(userID primitive.ObjectID, count int) (models.FinansijskaKartica, error) {
-	return s.buyMeals(userID, 90, "veceraCount", count)
+func (s *FinansijskaKarticaService) BuyVecereByEmail(email string, count int) (models.FinansijskaKartica, error) {
+	return s.buyMealsByEmail(email, 90, "veceraCount", count)
 }
 
-func (s *FinansijskaKarticaService) BuyDorucak(userID primitive.ObjectID, count int) (models.FinansijskaKartica, error) {
-	return s.buyMeals(userID, 70, "dorucakCount", count)
+func (s *FinansijskaKarticaService) BuyDorucakByEmail(email string, count int) (models.FinansijskaKartica, error) {
+	return s.buyMealsByEmail(email, 70, "dorucakCount", count)
 }
-func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID string) (models.FinansijskaKartica, error) {
+
+func (s *FinansijskaKarticaService) IskoristiObrok(email, jelovnikID, jeloID string) (models.FinansijskaKartica, error) {
 	// 1. Dohvati sve jelovnike preko REST poziva
 	jelovnici, err := GetJelovnici()
 	if err != nil {
@@ -169,12 +177,11 @@ func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID st
 		return models.FinansijskaKartica{}, fmt.Errorf("nepravilan format datuma jelovnika: %v", err)
 	}
 
-	// 5. Dohvati karticu iz Mongo
-	oid, _ := primitive.ObjectIDFromHex(userID)
+	// 5. Dohvati karticu iz Mongo preko email-a
 	var kartica models.FinansijskaKartica
-	err = s.Collection.FindOne(context.TODO(), bson.M{"userId": oid}).Decode(&kartica)
+	err = s.Collection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&kartica)
 	if err != nil {
-		return models.FinansijskaKartica{}, err
+		return models.FinansijskaKartica{}, fmt.Errorf("nije pronađena kartica za email %s", email)
 	}
 
 	// 6. Proveri dnevni limit po tipu obroka (maks 2 po tipu po danu)
@@ -221,6 +228,7 @@ func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID st
 		return models.FinansijskaKartica{}, fmt.Errorf("nije moguce rezervisati jelo, status %d", resResp.StatusCode)
 	}
 
+	// 9. Ako ostalo <= 2, šalje se notifikacija
 	if data.Remaining <= 2 {
 		notifBody := map[string]interface{}{
 			"title":      fmt.Sprintf("Ostatak jela: %s", jelo.Naziv),
@@ -229,7 +237,7 @@ func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID st
 			"jelovnikID": jelovnikID,
 			"jeloID":     jeloID,
 			"jeloNaziv":  jelo.Naziv,
-			"datum":      datumJelovnika.UTC().Format(time.RFC3339), // mora biti "datum" da handler čita
+			"datum":      datumJelovnika.UTC().Format(time.RFC3339),
 			"remaining":  data.Remaining,
 		}
 
@@ -273,10 +281,10 @@ func (s *FinansijskaKarticaService) IskoristiObrok(userID, jelovnikID, jeloID st
 		TipObroka: jelo.TipObroka,
 	})
 
-	// 12. Update baze
+	// 12. Update baze po email-u
 	_, err = s.Collection.UpdateOne(
 		context.TODO(),
-		bson.M{"userId": oid},
+		bson.M{"email": email},
 		bson.M{"$set": kartica},
 	)
 	if err != nil {

@@ -24,44 +24,73 @@ getKarticaByUser(userId: string): Observable<FinansijskaKartica> {
       }))
     );
 }
+
+getKarticaByEmail(email: string): Observable<FinansijskaKartica> {
+  return this.http.get<FinansijskaKartica>(`${this.baseUrl}/kartice/userE/by-email`, {
+    params: { email }   // email kao query parametar
+  }).pipe(
+    map(kartica => ({
+      ...kartica,
+      novac: +kartica.novac,
+      dorucakCount: +kartica.dorucakCount,
+      rucakCount: +kartica.rucakCount,
+      veceraCount: +kartica.veceraCount
+    }))
+  );
+}
+
 // Uplata novca
-deposit(userId: string, novac: number): Observable<FinansijskaKartica> {
+// Uplata novca
+deposit(email: string, novac: number): Observable<FinansijskaKartica> {
   return this.http.post<FinansijskaKartica>(
-    `${this.baseUrl}/kartice/${userId}/deposit`,
-    { novac }
+    `${this.baseUrl}/kartice/deposit`,
+    { novac },
+    { params: { email } }   // email kao query param
   );
 }
 
 // Kupovina doručka
-buyDorucak(userId: string, count: number): Observable<FinansijskaKartica> {
+buyDorucak(email: string, count: number): Observable<FinansijskaKartica> {
   return this.http.post<FinansijskaKartica>(
-    `${this.baseUrl}/kartice/${userId}/buy/dorucak`,
-    { count }
+    `${this.baseUrl}/kartice/buy/dorucak`,
+    { count },
+    { params: { email } }
   );
 }
 
 // Kupovina ručka
-buyRucak(userId: string, count: number): Observable<FinansijskaKartica> {
+buyRucak(email: string, count: number): Observable<FinansijskaKartica> {
   return this.http.post<FinansijskaKartica>(
-    `${this.baseUrl}/kartice/${userId}/buy/rucak`,
-    { count }
+    `${this.baseUrl}/kartice/buy/rucak`,
+    { count },
+    { params: { email } }
   );
 }
 
 // Kupovina večere
-buyVecera(userId: string, count: number): Observable<FinansijskaKartica> {
+buyVecera(email: string, count: number): Observable<FinansijskaKartica> {
   return this.http.post<FinansijskaKartica>(
-    `${this.baseUrl}/kartice/${userId}/buy/vecera`,
-    { count }
+    `${this.baseUrl}/kartice/buy/vecera`,
+    { count },
+    { params: { email } }
   );
 }
+
 // Iskoristi obrok (dorucak, rucak ili vecera, backend sam odlučuje po tipu)
-iskoristiObrok(userId: string, jelovnikId: string, jeloId: string): Observable<FinansijskaKartica> {
+iskoristiObrok(email: string, jelovnikId: string, jeloId: string): Observable<FinansijskaKartica> {
+  const params = {
+    email,
+    jelovnikId,
+    jeloId
+  };
+
   return this.http.post<FinansijskaKartica>(
-    `${this.baseUrl}/kartice/iskoristi/${userId}/${jelovnikId}/${jeloId}`,
-    {}
+    `${this.baseUrl}/kartice/iskoristi`,
+    {},   // body je prazan
+    { params }  // šalješ query parametre
   );
 }
+
 // Statistika o iskorišćenim obrocima
 getStatistika(): Observable<any> {
   return this.http.get<any>(`${this.baseUrl}/kartice/statistika`);

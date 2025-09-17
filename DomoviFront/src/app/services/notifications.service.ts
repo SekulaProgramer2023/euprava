@@ -10,15 +10,6 @@ export interface Notification {
   created_at: string;
 }
 
-export interface Notification2 {
-  _id: string;
-  user_id?: string;
-  message: string;
-  is_read: boolean;
-  created_at: string;
-  dogadjaj_id: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })

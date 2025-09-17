@@ -4,5 +4,4 @@ export interface Dogadjaj {
   opis: string;
   status: string;
   tema : string;
-  users: string[];
 }
