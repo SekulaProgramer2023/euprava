@@ -26,6 +26,7 @@ func main() {
 	router.HandleFunc("/dogadjaji", handlers.GetAllDogadjajiHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/dogadjaj", handlers.CreateDogadjajHandler).Methods("POST", "OPTIONS")
 	router.HandleFunc("/dogadjaji/{id}/status", handlers.UpdateDogadjajStatusHandler).Methods("PUT", "OPTIONS")
+	router.HandleFunc("/dogadjaj/{id}/users", handlers.AddUsersToDogadjajHandler).Methods("POST", "OPTIONS")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"},

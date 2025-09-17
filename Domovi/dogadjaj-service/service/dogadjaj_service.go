@@ -109,3 +109,42 @@ func UpdateDogadjajStatus(id string, status string) error {
 
 	return nil
 }
+
+func AddUsersToDogadjaj(dogadjajID string, users []string) error {
+	collection := db.Client.Database("euprava").Collection("dogadjaj")
+
+	// Pretvaramo string ID u ObjectID
+	objID, err := primitive.ObjectIDFromHex(dogadjajID)
+	if err != nil {
+		return fmt.Errorf("nevalidan ID: %w", err)
+	}
+
+	// Dodajemo korisnike u polje "users" bez duplikata
+	update := bson.M{
+		"$addToSet": bson.M{
+			"users": bson.M{"$each": users},
+		},
+	}
+
+	result, err := collection.UpdateOne(context.TODO(), bson.M{"_id": objID}, update)
+	if err != nil {
+		return fmt.Errorf("greška pri dodavanju korisnika na događaj: %w", err)
+	}
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("događaj nije pronađen")
+	}
+
+	// (opciono) šaljemo notifikaciju
+	notification := map[string]interface{}{
+		"dogadjaj_id": dogadjajID,
+		"message":     fmt.Sprintf("Na događaj su dodati korisnici: %v", users),
+		"created_at":  time.Now(),
+	}
+
+	body, err := json.Marshal(notification)
+	if err == nil {
+		http.Post("http://notification-service:8088/notification", "application/json", bytes.NewBuffer(body))
+	}
+
+	return nil
+}

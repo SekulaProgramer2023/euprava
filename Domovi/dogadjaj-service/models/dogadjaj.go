@@ -13,6 +13,7 @@ type Dogadjaj struct {
 	DatumSlanjaZahteva time.Time          `bson:"datum_slanja_zahteva" json:"datum_slanja_zahteva"`
 	DatumOdgovora      *time.Time         `bson:"datum_odgovora,omitempty" json:"datum_odgovora,omitempty"`
 	Tema               string             `bson:"tema" json:"tema"`
+	Users              []string           `bson:"users" json:"users"`
 	Status             string             `bson:"status" json:"status"` // "prihvaćen" | "odbijen" | "na čekanju"
 }
 
@@ -26,5 +27,6 @@ func NewDogadjaj(naziv, opis string, datumOdrzavanja time.Time, tema string) Dog
 		DatumSlanjaZahteva: time.Now(),
 		Status:             "na čekanju", // default
 		Tema:               tema,
+		Users:              []string{},
 	}
 }

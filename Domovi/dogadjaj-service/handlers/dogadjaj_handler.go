@@ -4,6 +4,7 @@ import (
 	"dogadjaj-service/models"
 	"dogadjaj-service/service"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strings"
 )
@@ -64,4 +65,36 @@ func UpdateDogadjajStatusHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "status uspešno ažuriran"})
+}
+
+type AddUsersRequest struct {
+	Users []string `json:"users"`
+}
+
+// Handler za dodavanje korisnika na događaj
+func AddUsersToDogadjajHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	dogadjajID := vars["id"]
+
+	var req AddUsersRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Neispravan JSON", http.StatusBadRequest)
+		return
+	}
+
+	if len(req.Users) == 0 {
+		http.Error(w, "Lista korisnika ne sme biti prazna", http.StatusBadRequest)
+		return
+	}
+
+	err := services.AddUsersToDogadjaj(dogadjajID, req.Users)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Korisnici su uspešno dodati na događaj",
+	})
 }
