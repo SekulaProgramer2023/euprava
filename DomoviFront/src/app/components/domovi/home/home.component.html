@@ -143,7 +143,7 @@
 
   <!-- Dugme samo ako je role == user -->
   <button class="useliSe" 
-      *ngIf="role === 'User'" 
+      *ngIf="role === 'User' || role === 'user'" 
       [disabled]="!soba.IsFree"
       (click)="useliStudenta(soba.id)">
     Useli se

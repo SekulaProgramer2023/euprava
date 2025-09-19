@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"finansijskaKartica-service/models"
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -128,16 +129,81 @@ func (s *FinansijskaKarticaService) buyMealsByEmail(email string, cena float64, 
 	return updated, nil
 }
 
+type User struct {
+	Email string `json:"email"`
+	Soba  string `json:"soba,omitempty"`
+}
+
 func (s *FinansijskaKarticaService) BuyRuckoviByEmail(email string, count int) (models.FinansijskaKartica, error) {
-	return s.buyMealsByEmail(email, 120, "rucakCount", count)
+	resp, err := http.Get("http://host.docker.internal/domovi/users/users")
+	if err != nil {
+		return models.FinansijskaKartica{}, err
+	}
+	defer resp.Body.Close()
+
+	var users []User
+	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
+		return models.FinansijskaKartica{}, err
+	}
+
+	for _, u := range users {
+		if u.Email == email {
+			if u.Soba != "" {
+				return s.buyMealsByEmail(email, 120, "rucakCount", count) // useljen
+			}
+			return s.buyMealsByEmail(email, 320, "rucakCount", count) // nije useljen
+		}
+	}
+
+	return models.FinansijskaKartica{}, errors.New("user not found")
 }
 
 func (s *FinansijskaKarticaService) BuyVecereByEmail(email string, count int) (models.FinansijskaKartica, error) {
-	return s.buyMealsByEmail(email, 90, "veceraCount", count)
+	resp, err := http.Get("http://host.docker.internal/domovi/users/users")
+	if err != nil {
+		return models.FinansijskaKartica{}, err
+	}
+	defer resp.Body.Close()
+
+	var users []User
+	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
+		return models.FinansijskaKartica{}, err
+	}
+
+	for _, u := range users {
+		if u.Email == email {
+			if u.Soba != "" {
+				return s.buyMealsByEmail(email, 90, "veceraCount", count)
+			}
+			return s.buyMealsByEmail(email, 240, "veceraCount", count)
+		}
+	}
+
+	return models.FinansijskaKartica{}, errors.New("user not found")
 }
 
 func (s *FinansijskaKarticaService) BuyDorucakByEmail(email string, count int) (models.FinansijskaKartica, error) {
-	return s.buyMealsByEmail(email, 70, "dorucakCount", count)
+	resp, err := http.Get("http://host.docker.internal/domovi/users/users")
+	if err != nil {
+		return models.FinansijskaKartica{}, err
+	}
+	defer resp.Body.Close()
+
+	var users []User
+	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
+		return models.FinansijskaKartica{}, err
+	}
+
+	for _, u := range users {
+		if u.Email == email {
+			if u.Soba != "" {
+				return s.buyMealsByEmail(email, 70, "dorucakCount", count)
+			}
+			return s.buyMealsByEmail(email, 210, "dorucakCount", count)
+		}
+	}
+
+	return models.FinansijskaKartica{}, errors.New("user not found")
 }
 
 func (s *FinansijskaKarticaService) IskoristiObrok(email, jelovnikID, jeloID string) (models.FinansijskaKartica, error) {

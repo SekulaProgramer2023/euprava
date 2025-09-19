@@ -1,7 +1,6 @@
 package main
 
 import (
-	"finansijskaKartica-service/bootstrap"
 	"finansijskaKartica-service/handlers"
 	"finansijskaKartica-service/service"
 	"fmt"
@@ -21,7 +20,7 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.DisconnectMongo()
-	bootstrap.ClearKartice()
+	//bootstrap.ClearKartice()
 	dbInstance := db.Client.Database("eupravaM")
 	karticaService := service.NewFinansijskaKarticaService(dbInstance)
 	karticaHandler := handlers.KarticaHandler{Service: karticaService}
