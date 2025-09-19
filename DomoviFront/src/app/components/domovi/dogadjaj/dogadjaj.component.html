@@ -25,18 +25,55 @@
 <div class="dogadjaji-container">
   <h1>Lista događaja</h1>
 
-  <button class="create-btn" (click)="openModal()">➕ Kreiraj događaj</button>
+  <button class="create-btn" (click)="openModal()" *ngIf="role === 'Admin'">➕ Kreiraj događaj</button>
 
   <div *ngIf="loading">⏳ Učitavanje...</div>
   <div *ngIf="error">{{ error }}</div>
 
   <div *ngIf="!loading && !error">
     <div *ngFor="let d of dogadjaji" class="dogadjaj-card">
-      <h2>{{ d.naziv }}</h2>
-      <p><strong>Opis:</strong> {{ d.opis }}</p>
-      <p><strong>Tema hrane:</strong> {{ d.tema }}</p>
-      <p><strong>Datum održavanja:</strong> {{ d.datum_odrzavanja | date:'dd.MM.yyyy HH:mm' }}</p>
-      <p><strong>Status:</strong> {{ d.status }}</p>
+  <h2>{{ d.naziv }}</h2>
+  <p><strong>Opis:</strong> {{ d.opis }}</p>
+  <p><strong>Tema hrane:</strong> {{ d.tema }}</p>
+  <p><strong>Datum održavanja:</strong> {{ d.datum_odrzavanja | date:'dd.MM.yyyy HH:mm' }}</p>
+  <p><strong>Status:</strong> {{ d.status }}</p>
+
+  <!-- Dugme za dodavanje usera -->
+  <button class=" create-btn" (click)="openUsersModal(d.id!)" *ngIf="role === 'Admin'"> Dodaj učesnike</button>
+</div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showUsersModal">
+  <div class="modal">
+    <h2>Dodaj korisnike na događaj</h2>
+
+    <!-- Već dodati korisnici -->
+    <div *ngIf="addedUsers.length > 0">
+      <h4>Već dodati korisnici:</h4>
+      <ul style="list-style: none;">
+        <li *ngFor="let user of addedUsers">
+          {{ user.name }} {{ user.surname }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Ostali korisnici sa checkboxovima -->
+    <div *ngIf="usersWithRooms.length > 0">
+      <h4>Dodaj nove korisnike:</h4>
+      <ul style="list-style: none; padding-inline-start: 40px;">
+        <li *ngFor="let user of usersWithRooms">
+          <label style="display: flex;justify-content: space-around;">
+            {{ user.name }} {{ user.surname }}
+            <input style="width: auto;" type="checkbox" [(ngModel)]="user.selected">
+            
+          </label>
+        </li>
+      </ul>
+    </div>
+
+    <div class="modal-actions" style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end;">
+      <button class="create-btn" (click)="submitUsers()">Sačuvaj</button>
+      <button class="create-btn" (click)="closeUsersModal()">Otkaži</button>
     </div>
   </div>
 </div>

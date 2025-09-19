@@ -16,7 +16,7 @@ export class RegisterComponent {
   surname: string = '';
   email: string = '';
   password: string = '';
-  role: string = 'user';
+  role: string = 'User';
   isActive: boolean = true;
 
   constructor(private userService: UserService, private router: Router) {}
